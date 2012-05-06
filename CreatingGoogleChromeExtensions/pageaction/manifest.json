@@ -1,0 +1,13 @@
+{
+	"name" : "Font Resizer for Hacker News",
+	"version" : "0.1.4",
+	"manifest_version" : 2,
+  
+	"description" : "Example of a content script extension",
+	"content_scripts": [
+		{
+			"matches" : ["http://news.ycombinator.com/*"],
+			"js" : ["hackernews.js"]
+		}
+	]	
+}

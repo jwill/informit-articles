@@ -1,0 +1,22 @@
+{
+	"name" : "Note Taker",
+	"version" : "0.1.1",
+	"manifest_version" : 2,
+  
+	"description" : "Example of a browser action extension",
+	"icons": {
+		"48":"icon48.png",
+		"128":"icon128.png"
+	},
+	"browser_action" : {
+		"default_icon" : "icon.png",
+		"default_title" : "Take a Note",
+		"default_popup" : "popup.html"
+	}, 
+	"permissions" : [
+		"tabs", "notifications"
+	],
+	"background" : {
+		"scripts" : ["background.js"]
+	}
+}
