@@ -1,0 +1,8 @@
+.borders {
+	height: 600px;
+  width: 600px;
+	border: 1px;
+	border-style: solid;
+	margin-left: 20px;
+	margin-top: 20px;
+}
