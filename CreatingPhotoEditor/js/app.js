@@ -10,11 +10,13 @@ var App = function() {
 
 	self.init = function() {
 		// Init canvas contexts
-		self.canvas = $('canvas')
-		self.ctx1 = self.canvas.get(0).getContext('2d');
-		self.ctx2 = null;
+		self.canvas = fx.canvas();
+		$('#canvasArea').empty();
+		$('#canvasArea').append(self.canvas);
 		self.isSaved = false;
 		self.setupMenus();
+
+		self.openFile();
 	}
 
 	self.newFile = function() {
@@ -32,7 +34,7 @@ var App = function() {
 
 	self.saveFile = function() {
 		// Save context to data url.
-		var dataUrl = self.canvas.get(0).toDataURL("image/png");
+		var dataUrl = self.canvas.toDataURL("image/png");
 		chrome.tabs.create({url: dataUrl});
 		
 	}
@@ -54,7 +56,8 @@ var App = function() {
 						var dataURL = e.target.result;
 						var image = new Image();
 						image.onload = function() {
-							self.ctx1.drawImage(this, 0, 0, maxWidth, maxHeight);
+							self.tex = self.canvas.texture(image);
+							self.canvas.draw(self.tex).update();
 						};
 						image.src = dataURL;
 					}
@@ -64,12 +67,78 @@ var App = function() {
 		}
 	}
 
+	self.sepia = function () {
+		$('#richUI').empty();
+		$('#richUI').append('<h3>Sepia</h3>');
+
+		// Function to be executed on every change
+		var func = function() {
+			// Scale change to range 0 - 1.0
+			var value = self.sepiaSlider.val()/100;
+			self.canvas.draw(self.tex).sepia(value).update();	
+		};
+
+		self.sepiaSlider = self.createSlider(0,100, func);
+		// set value to 0 for no effect
+		self.sepiaSlider.attr('value',0);
+			
+		$('#richUI').append(self.sepiaSlider);
+	}
+
+	self.brightness = function () {
+		$('#richUI').empty();
+		$('#richUI').append('<h3>Brightness / Contrast</h3>');
+
+		var func = function() {
+			// Scale change to range -1.0 - 1.0
+			var bsValue = self.brightnessSlider.val()/100;
+			var cValue = self.contrastSlider.val()/100;
+			self.canvas.draw(self.tex).brightnessContrast(bsValue,cValue).update();	
+			
+		}
+
+		self.brightnessSlider = self.createSlider(-100, 100, func);
+		self.contrastSlider = self.createSlider(-100, 100, func);
+
+		$('#richUI').append(self.brightnessSlider).append(self.contrastSlider);
+	}
+
+	self.hueSaturation = function () {
+		$('#richUI').empty();
+		$('#richUI').append('<h3>Hue / Saturation</h3>');
+
+		var func = function() {
+			// Scale change to range -1.0 - 1.0
+			var hueValue = self.hueSlider.val()/100;
+			var sValue = self.saturationSlider.val()/100;
+			self.canvas.draw(self.tex).hueSaturation(hueValue, sValue).update();	
+			
+		}
+		self.hueSlider = self.createSlider(-100, 100, func);
+		self.saturationSlider = self.createSlider(-100, 100, func);
+
+		$('#richUI').append(self.hueSlider).append(self.saturationSlider);
+
+	}
+
+	self.createSlider = function(min, max, func) {
+		var slider = $('<input/>').attr('type','range').attr('min',min).attr('max',max);
+		slider.bind('change', func);
+		return slider
+	}
+
 	self.setupMenus = function() {
 			$('#newMenu').click(self.newFile);			
 			$('#openMenu').click(self.openFile);
 			$('#saveMenu').click(self.saveFile);
 			$('#quitMenu').click(self.quitApp);
+			
+			$('#sepiaMenu').click(self.sepia);
+			$('#hsMenu').click(self.hueSaturation);
+			$('#brightnessMenu').click(self.brightness);
 	}
+
 
 	self.init();
 }
+window.app = new App();
