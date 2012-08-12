@@ -22,24 +22,27 @@ function Card(ordinal, val, suit) {
     var width = 169;
     var height = 245;
     
+    // 45 dpi height and width
+    width = 85;
+    height = 123; 
+    
     var self = this;
     
     self.init = function() {        
         self.ord = ordinal;
         self.suit = suit;
         self.val = val;
-        self.cardBackPath = "images/90dpi/back.png";
-        self.cardFrontPath = "images/90dpi/"+self.ord+"_"+self.suit+".png";       
+        self.cardBackPath = "http://ribbitwave.appspot.com/" + "images/45dpi/back.png";
+        self.cardFrontPath = "http://ribbitwave.appspot.com/" +"images/45dpi/"+self.ord+"_"+self.suit+".png";       
         self.meta = new Object();
-        self.cardBack = new CachedImageView(backImage, 169, 245);
+        self.cardBack = new CachedImageView(backImage, width, height);
         
-				img = new Image()
-				img.onload = function() {
-								console.log("loaded");
-								self.cardFront = new CachedImageView(this, 169, 245);
-							//  window.game = new WarGame();
-				}
-				img.src = self.cardFrontPath;
+		img = new Image()
+		img.onload = function() {
+						console.log("loaded");
+						self.cardFront = new CachedImageView(this, width, height);
+		}
+		img.src = self.cardFrontPath;
     }
     
     self.setX = function(x) {
@@ -79,7 +82,9 @@ function Card(ordinal, val, suit) {
     }
     
     self.toString = function() {
-        return "Card:"+self.ord+"-"+self.suit;
+        return JSON.stringify({ 
+        	ord:self.ord, suit:self.suit 
+        });
     }
     
     self.equals = function(obj2) {

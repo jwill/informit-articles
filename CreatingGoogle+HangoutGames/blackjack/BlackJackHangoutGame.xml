@@ -6,8 +6,20 @@
   </ModulePrefs>
   <Content type="html">
     <![CDATA[
-      <script src="//talkgadget.google.com/hangouts/_/api/hangout.js?v=1.1"></script>
-      <!-- Your application code -->
+  		<script src="//talkgadget.google.com/hangouts/_/api/hangout.js?v=1.1"></script>
+      	<script src="//ribbitwave.appspot.com/js/coffee-script.js" type="text/javascript"></script>
+        <script src="//ribbitwave.appspot.com/js/Card.js" type="text/javascript"></script>
+        <script src="//ribbitwave.appspot.com/js/Hand.js" type="text/javascript"></script>
+        <script src="//ribbitwave.appspot.com/js/Evaluator.js" type="text/javascript"></script>
+        <script src="//ribbitwave.appspot.com/js/CachedImageView.js" type="text/javascript"></script>
+        <script src="//ribbitwave.appspot.com/js/Deck.js" type="text/javascript"></script>
+        <script src="//ribbitwave.appspot.com/js/kibo.js" type="text/javascript"></script>
+        <script src="//ribbitwave.appspot.com/js/Player.js" type="text/javascript"></script>
+        <script src="//ribbitwave.appspot.com/js/underscore.js" type="text/javascript"></script>
+        <script src="//ribbitwave.appspot.com/js/jquery-1.7.2.min.js" type="text/javascript"></script>
+        <script src="//ribbitwave.appspot.com/js/game.js" type="text/javascript"></script>
+
+  		<canvas id='gameboard'></canvas>
     ]]>
   </Content>
 </Module>

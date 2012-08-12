@@ -53,12 +53,41 @@ function Deck(numDecks, ctx) {
         }
     }
     
-    self.dealCard = function() {
+    /*self.dealCard = function() {
         if (self.cards.length > 0) {
             var card = self.cards.pop();
 						card.ctx = self.ctx;
 						return card;
 				}
+    }*/
+    
+    self.dealCard = function() {
+    	// Get deck state object and parse it
+    	groupDeck = gapi.hangout.data.getValue('deck');
+    	groupDeckArray = JSON.parse(groupDeck);
+    	if (groupDeckArray.length > 0) {
+    		var cardValue = JSON.parse(groupDeckArray.pop());
+    		// Do lookup for card
+    		var card = self.lookupCard(cardValue);
+    		if (card != null) {
+    			// Save deck state
+    			groupDeck = JSON.stringify(groupDeckArray);
+    			gapi.hangout.data.setValue('deck', groupDeck)
+    			return card;
+    		}
+    	}
+    	// TODO Handle case where you have to reshuffle deck
+    	
+    }
+    
+    self.lookupCard = function(value) {
+    	for (var i = 0; i<window.deck.cards.length; i++) {
+    		var card = window.deck.cards[i];
+    		if (value.suit == card.suit && value.ord == card.ord) {
+    			return card;
+    		} 
+    	}
+    	return null;
     }
     
     self.dealCards = function(num) {
@@ -67,6 +96,14 @@ function Deck(numDecks, ctx) {
             cards.push(self.dealCard());
         }
         return cards;
+    }
+    
+    self.toString = function() {
+    	var c = [];
+    	for(var i = 0; i<self.cards.length; i++) {
+    		c.push(self.cards[i].toString());
+    	}
+    	return JSON.stringify(c);
     }
     
     self.init();

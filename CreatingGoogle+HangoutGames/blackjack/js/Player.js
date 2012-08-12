@@ -12,6 +12,7 @@ function Player() {
 		// but there could be multiples 
 		// splitting is implemented 
 		self.hands = [new Hand()];
+		self.tokens = 1000;
 	}
 
 	self.init(); 
