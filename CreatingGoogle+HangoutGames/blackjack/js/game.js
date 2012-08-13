@@ -21,7 +21,8 @@ var BlackJackGame = function() {
 	var self = this;
 	
 	self.init = function() {
-		document.addEventListener("DOMContentLoaded", function() {
+		
+		window.createCanvas = function() {
 			self.gameWidth = window.innerWidth;
 			self.gameHeight = window.innerHeight;
 			self.canvas = document.getElementById("gameboard");
@@ -29,7 +30,8 @@ var BlackJackGame = function() {
 			$(self.canvas).attr("height", self.gameHeight);
 			self.ctx = game.canvas.getContext("2d");
 			self.drawBackground();
-		});
+		}
+		$().ready(function() {window.createCanvas();});
 	}
 
 	self.getContext = function () {
@@ -75,6 +77,38 @@ var BlackJackGame = function() {
 			window.game.drawBackground();
 		})
 	};
+	
+	self.updateGameBoard = function() {
+		self.game.drawBackground();
+		// Draw all the players
+		
+		window.player.drawPlayerImage();
+		window.player.hands[0].drawHand();
+	}
+	
+	self.loadPlayerData = function() {
+		var hangoutParticipantId = gapi.hangout.getParticipantId();
+		var enabledPlayers = gapi.hangout.getEnabledParticipants();
+		var players = [];
+		for (var i = 0; i<enabledPlayers.length; i++) {
+			var participant = enabledPlayers[i];
+			//if (participant.id != hangoutParticipantId) {
+				var player = new Player();
+				player.id = participant.person.id;
+				player.loadPlayerImage(participant.person.image.url);
+				
+				var state = gapi.hangout.data.getValue(player.id);
+				if (state) {
+					var playerData = JSON.parse(gapi.hangout.data.getValue(player.id));
+					player.hands = playerData.hands;
+					// TODO Parse to cards
+				}
+				console.log(player.hands);
+			//}
+			players.push(player);
+		}
+		return players;
+	}
 
 	self.init();
 }

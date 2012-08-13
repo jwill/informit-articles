@@ -19,6 +19,21 @@ function Hand() {
 		self.cards.push(card);
   }
   
+  // Set the position of the first card 
+  // Recursively set the others
+  self.setPosition = function (x,y) {
+	  var card = self.cards[0];
+	  card.setX(x);
+	  card.setY(y);
+	  for (var i = 1; i<self.cards.length; i++) {
+		  var c = self.cards[i]
+		  var previousCard = self.cards[i-1];
+		  c.setX(previousCard.getX() + self.offset);
+		  c.setY(previousCard.getY() + self.offset);
+	  }
+	  console.log('repositioned cards');
+  }
+  
   self.addAll = function (array) {
     for (var i = 0; i < array.length; i++) {
         self.cards.push(array[i]);    
@@ -44,7 +59,14 @@ function Hand() {
     // Returns the card from the front of the deck;
   }
   
-  
+  self.getState = function () {
+	  var cardsArray = [];
+	  for (var i=0; i<self.cards.length; i++) {
+		  var card = self.cards[i];
+		  cardsArray.push(card.toString());
+	  }
+	  return cardsArray;
+  }
             
   self.init();
 }                                                

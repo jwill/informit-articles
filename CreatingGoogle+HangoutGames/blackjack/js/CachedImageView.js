@@ -5,7 +5,7 @@ var CachedImageView = function (image, width, height) {
 	
     var self = this;		
 
-		self.img = image;
+	self.img = image;
     self.loaded = true;
     self.width = 10;
     self.height = 10;

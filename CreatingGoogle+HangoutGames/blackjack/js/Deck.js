@@ -84,6 +84,7 @@ function Deck(numDecks, ctx) {
     	for (var i = 0; i<window.deck.cards.length; i++) {
     		var card = window.deck.cards[i];
     		if (value.suit == card.suit && value.ord == card.ord) {
+    			// TODO Think about cloning card instead
     			return card;
     		} 
     	}
