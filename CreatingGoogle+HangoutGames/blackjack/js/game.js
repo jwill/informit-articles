@@ -100,8 +100,21 @@ var BlackJackGame = function() {
 				var state = gapi.hangout.data.getValue(player.id);
 				if (state) {
 					var playerData = JSON.parse(gapi.hangout.data.getValue(player.id));
-					player.hands = playerData.hands;
-					// TODO Parse to cards
+					var handsData = JSON.parse(playerData.hands);
+					player.hands = [];
+					// Parse cards/hands
+					_.each(handsData, function(hand) {
+						var h = new Hand();
+						_.each(hand, function(cardValue){
+							var card = deck.lookupCard(JSON.parse(cardValue));
+							h.addToHand(card);
+						});
+						player.hands.push(h);
+					});
+					for (var j = 0; j < handsData.length; j++) {
+						var cardsArray = handsData[j];
+					}
+					
 				}
 				console.log(player.hands);
 			//}

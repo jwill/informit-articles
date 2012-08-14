@@ -77,7 +77,7 @@ function Player() {
 		}
 		p.hands = JSON.stringify(handsValue);
 		console.log(p);
-		gapi.hangout.data.setValue(player.id, JSON.stringify(p));
+		gapi.hangout.data.setValue(p.id, JSON.stringify(p));
 	}
 
 	self.init(); 
