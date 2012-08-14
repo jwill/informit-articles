@@ -36,6 +36,15 @@ var CachedImageView = function (image, width, height) {
             game.getContext().fillRect(self.x,self.y,100,100);
         }
     };
+    
+    self.clone = function() {
+    	var copy = new CachedImageView();
+    	copy.loaded = true;
+    	copy.img = self.img;
+    	copy.width = self.width;
+    	copy.height = self.height;
+    	return copy;
+    }
 
 		
     self.contains = function(x,y) {

@@ -122,6 +122,11 @@ var BlackJackGame = function() {
 		}
 		return players;
 	}
+	
+	self.createTurnIndicator = function () {
+		var temp = gapi.hangout.av.effects.createImageResource("http://latest.ribbitwave.appspot.com/images/button.png");
+		self.overlay = temp.createOverlay({position:{x:-0.35, y:0.25},scale:{magnitude:0.25, reference:gapi.hangout.av.effects.ScaleReference.WIDTH}});
+	}
 
 	self.init();
 }

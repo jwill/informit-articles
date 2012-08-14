@@ -32,17 +32,20 @@ function Card(ordinal, val, suit) {
         self.ord = ordinal;
         self.suit = suit;
         self.val = val;
-        self.cardBackPath = "http://ribbitwave.appspot.com/" + "images/45dpi/back.png";
-        self.cardFrontPath = "http://ribbitwave.appspot.com/" +"images/45dpi/"+self.ord+"_"+self.suit+".png";       
         self.meta = new Object();
-        self.cardBack = new CachedImageView(backImage, width, height);
+        if (self.ord != undefined) {
+        	self.cardBackPath = "http://ribbitwave.appspot.com/" + "images/45dpi/back.png";
+        	self.cardFrontPath = "http://ribbitwave.appspot.com/" +"images/45dpi/"+self.ord+"_"+self.suit+".png";       
+        	self.meta = new Object();
+        	self.cardBack = new CachedImageView(backImage, width, height);
         
-		img = new Image()
-		img.onload = function() {
-						console.log("loaded");
-						self.cardFront = new CachedImageView(this, width, height);
-		}
-		img.src = self.cardFrontPath;
+        	img = new Image()
+        	img.onload = function() {
+				console.log("loaded");
+				self.cardFront = new CachedImageView(this, width, height);
+        	}
+        	img.src = self.cardFrontPath;
+    	}
     }
     
     self.setX = function(x) {
@@ -109,6 +112,19 @@ function Card(ordinal, val, suit) {
             }
         }
         return false;
+    }
+    
+    self.clone = function() {
+    	var copy = new Card();
+    	copy.cardFront = self.cardFront.clone();
+    	copy.cardBack = self.cardBack.clone();
+    	copy.cardBackPath = self.cardBackPath;
+    	copy.cardFrontPath = self.cardFrontPath;
+    	copy.ord = self.ord;
+        copy.suit = self.suit;
+        copy.val = self.val;
+        
+        return copy;
     }
 
 		self.drawFront = function (size) {
