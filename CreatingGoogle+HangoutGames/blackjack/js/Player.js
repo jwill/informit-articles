@@ -49,13 +49,14 @@ function Player() {
 		// Hit current hand
 		self.hands[self.currentHand].addToHand(card);
 		// Save hand to state
-		
+	  self.savePlayerState();	
 	}
 	
 	self.stand = function() {
 		if (self.hands.length > 1) {
 			self.currentHand++;
 		}
+    self.savePlayerState();
 	}
 	
 	self.drawPlayerImage = function(x,y) {

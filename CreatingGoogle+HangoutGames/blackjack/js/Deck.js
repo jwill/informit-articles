@@ -2,6 +2,12 @@
     Defines the Deck object.
     @author jwill
 */
+backImage = new Image()
+backImage.onload = function() {
+  console.log("loaded");
+}
+window['root'] = "//ribbitwave.appspot.com/";
+backImage.src = window['root'] + "images/45dpi/back.png";
 
 function Deck(numDecks, ctx) {
     if ( !(this instanceof arguments.callee) ) {
@@ -10,7 +16,8 @@ function Deck(numDecks, ctx) {
     var cards;
     var self = this;
     
-    self.init = function() {        
+    self.init = function() {
+        self.numDecks = numDecks;      
         self.cards = new Array(52 * numDecks);
         self.initCards();
     }
@@ -29,6 +36,8 @@ function Deck(numDecks, ctx) {
                 }
             }
         }
+
+        
         
         // Shuffle the decks
         self.shuffleDecks();
@@ -36,7 +45,7 @@ function Deck(numDecks, ctx) {
     
     self.rand = function(max) {
             return Math.floor(Math.random()*max);
-        }         
+    }         
     
     self.shuffleDecks = function () {
         var swap = function(i,j) {
@@ -60,6 +69,24 @@ function Deck(numDecks, ctx) {
 						return card;
 				}
     }*/
+
+    self.reshuffleDecks = function() {
+      console.log('reshuffling decks...');
+      var numDecks = JSON.parse(gapi.hangout.data.getValue('numDecks'));
+      var deckData = JSON.parse(deck.toString());
+      var newCards = [];
+
+      _.times(numDecks, function() {
+        _.each(deckData, function(c) {
+          newCards.push(c);
+        });
+        newCards = _.shuffle(newCards);
+      });
+      var cardValue = JSON.parse(newCards.pop());
+      var card = self.lookupCard(cardValue);          
+      gapi.hangout.data.setValue('deck', JSON.stringify(newCards));
+      return [card,newCards];
+    };
     
     self.dealCard = function() {
     	// Get deck state object and parse it
@@ -74,31 +101,64 @@ function Deck(numDecks, ctx) {
     			groupDeck = JSON.stringify(groupDeckArray);
     			gapi.hangout.data.setValue('deck', groupDeck)
     			return card;
-    		}
-    	}
-    	// TODO Handle case where you have to reshuffle deck
-    	
+    		}    	
+      } else {
+          return self.reshuffleDecks()[0];
+      }	
     }
+
+    
+
+     self.dealCards = function(num) {
+      // Get deck state object and parse it
+    	groupDeck = gapi.hangout.data.getValue('deck');
+    	groupDeckArray = JSON.parse(groupDeck);
+
+      var cardList = [];
+
+      if (groupDeckArray.length > num) {
+        _.times(num, function() {
+          var cardValue = JSON.parse(groupDeckArray.pop());
+          var card = self.lookupCard(cardValue);
+          cardList.push(card);
+        });
+      } else {
+        var remaining = groupDeckArray.length;
+        _.times(remaining, function() {
+          var cardValue = JSON.parse(groupDeckArray.pop());
+          var card = self.lookupCard(cardValue);
+          cardList.push(card);
+        });
+        var shuffle = self.reshuffleDecks();
+        cardList.push(shuffle[0]);
+        var newCards = self.dealCards(num - remaining - 1);
+        _.each(newCards, function(x){
+          var cardValue = JSON.parse(shuffle[1].pop());
+          var card = self.lookupCard(cardValue);
+          cardList.push(card);
+        });
+        groupDeckArray = shuffle[1];
+      }
+
+      // Save deck state
+      g = JSON.stringify(groupDeckArray);
+      gapi.hangout.data.setValue('deck', g);
+
+
+      return cardList;
+    }
+
     
     self.lookupCard = function(value) {
     	for (var i = 0; i<window.deck.cards.length; i++) {
     		var card = window.deck.cards[i];
     		if (value.suit == card.suit && value.ord == card.ord) {
-    			// TODO Think about cloning card instead
-    			return card;
+    			return card.clone();
     		} 
     	}
     	return null;
     }
-    
-    self.dealCards = function(num) {
-        var cards = new Array();
-        for (var i = 0;  i<num ; i++) {
-            cards.push(self.dealCard());
-        }
-        return cards;
-    }
-    
+        
     self.toString = function() {
     	var c = [];
     	for(var i = 0; i<self.cards.length; i++) {

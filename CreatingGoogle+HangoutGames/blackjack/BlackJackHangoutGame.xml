@@ -13,9 +13,9 @@
         <script src="//ribbitwave.appspot.com/js/Evaluator.js" type="text/javascript"></script>
         <script src="//ribbitwave.appspot.com/js/CachedImageView.js" type="text/javascript"></script>
         <script src="//ribbitwave.appspot.com/js/Deck.js" type="text/javascript"></script>
-        <script src="//ribbitwave.appspot.com/js/kibo.js" type="text/javascript"></script>
+        <script src="//ribbitwave.appspot.com/js/mousetrap.min.js" type="text/javascript"></script>
         <script src="//ribbitwave.appspot.com/js/Player.js" type="text/javascript"></script>
-        <script src="//ribbitwave.appspot.com/js/underscore.js" type="text/javascript"></script>
+        <script src="//ribbitwave.appspot.com/js/underscore-min.js" type="text/javascript"></script>
         <script src="//ribbitwave.appspot.com/js/jquery-1.7.2.min.js" type="text/javascript"></script>
         <script src="//ribbitwave.appspot.com/js/game.js" type="text/javascript"></script>
 

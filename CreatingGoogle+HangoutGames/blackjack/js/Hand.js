@@ -1,74 +1,60 @@
-function Hand() {
-  if ( !(this instanceof arguments.callee) ) {
-  	 return new arguments.callee(arguments); 
-  }
-  
-  var self = this;
-  
-  self.init = function () {
-  	self.cards = [ ]
-  }
-  
-  self.addToHand = function (card) {
+var Hand = function() {
+	this.init();
+};
+
+Hand.prototype.init = function () {
+  	this.cards = [ ];
+    this.offset = 15;
+}
+
+Hand.prototype.addToHand = function (card) {
   	// Set card position
-		if (self.cards.length+1 > 1) {
-			var previousCard = self.cards[self.cards.length-1]
-			card.setX(previousCard.getX() + self.offset);
-			card.setY(previousCard.getY() + self.offset);	
+		if (this.cards.length+1 > 1) {
+			var previousCard = this.cards[this.cards.length-1]
+			card.setX(previousCard.getX() + this.offset);
+			card.setY(previousCard.getY() + this.offset);	
 		}
-		self.cards.push(card);
-  }
-  
-  // Set the position of the first card 
-  // Recursively set the others
-  self.setPosition = function (x,y) {
-	  var card = self.cards[0];
+		this.cards.push(card);
+}
+
+// Set the position of the first card 
+// Recursively set the others
+Hand.prototype.setPosition = function (x,y) {
+	  var card = this.cards[0];
 	  card.setX(x);
 	  card.setY(y);
-	  for (var i = 1; i<self.cards.length; i++) {
-		  var c = self.cards[i]
-		  var previousCard = self.cards[i-1];
-		  c.setX(previousCard.getX() + self.offset);
-		  c.setY(previousCard.getY() + self.offset);
+	  for (var i = 1; i<this.cards.length; i++) {
+		  var c = this.cards[i]
+		  var previousCard = this.cards[i-1];
+		  c.setX(previousCard.getX() + this.offset);
+		  c.setY(previousCard.getY() + this.offset);
 	  }
 	  console.log('repositioned cards');
-  }
-  
-  self.addAll = function (array) {
+}
+
+Hand.prototype.addAll = function (array) {
     for (var i = 0; i < array.length; i++) {
-        self.cards.push(array[i]);    
+        this.cards.push(array[i]);    
     }
-  }
-  self.offset = 15;	
-	
- /**
-	* Draw first card face down and subsequent cards face up.
-	* Decrement x and increment y to layer cards 
-	*/
-	self.drawHand = function (size) {
+}
+
+Hand.prototype.drawHand = function (size) {
 		console.log("here");
-		for (var i = 0; i < self.cards.length; i++) {
-			var card = self.cards[i];
+		for (var i = 0; i < this.cards.length; i++) {
+			var card = this.cards[i];
 			if (i == 0)
 				card.drawFront(size);
 			else card.drawFront(size);
 		}
-	}
+}
   
-  self.playCard = function () {
-    // Returns the card from the front of the deck;
-  }
-  
-  self.getState = function () {
+Hand.prototype.getState = function () {
 	  var cardsArray = [];
-	  for (var i=0; i<self.cards.length; i++) {
-		  var card = self.cards[i];
+	  for (var i=0; i<this.cards.length; i++) {
+		  var card = this.cards[i];
 		  cardsArray.push(card.toString());
 	  }
 	  return cardsArray;
-  }
-            
-  self.init();
-}                                                
+}
 
 window.Hand = Hand;                                               
