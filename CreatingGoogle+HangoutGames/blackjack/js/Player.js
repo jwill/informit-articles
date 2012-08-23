@@ -1,36 +1,88 @@
-function Player() {
-  if ( !(this instanceof arguments.callee) ) {
-  	 return new arguments.callee(arguments); 
-  }
+var Player = function() {
+  this.isComputer = false;
+	this.isDealer = false;
+	this.playerImage = false;
 	
-	var self = this; 
+	this.currentHand = 0;
+	this.id = null;
+	this.isPlayerTurn = false;
+	this.isLocal = false;
 
-	self.isComputer = false;
-	self.isDealer = false;
-	self.playerImage = false;
+  this.hands = [new Hand()];
+  this.tokens = 1000;
+  this.evaluator = new Evaluator();
+};
+
+Player.prototype.setPlayerId = function(id) {
+	this.playerId = id;
+}
+
+Player.prototype.hit = function(card) {
+  console.log("hit");
+	// Hit current hand
+  var hand = this.hands[this.currentHand];
+	hand.addToHand(card);
+  // Check for bust
+  if (this.evaluator.isBust(hand)) {
+    this.stand();
+  } else {
+    // Save hand to state
+    this.savePlayerState();	
+  }
+}
+
+Player.prototype.getCurrentHand = function() {
+  return this.hands[this.currentHand];
+};
+
+Player.prototype.clearCards = function() {
+  this.hands = [new Hand()];
+  this.currentHand = 0;
+}
 	
-	self.currentHand = 0;
-	self.id = null;
-	self.isPlayerTurn = false;
-	self.isLocal = false;
+Player.prototype.stand = function() {
+  console.log("stand");
+	if (this.hands.length-1 != this.currentHand) {
+		this.currentHand++;
+	} else {
+    if (this.id != 'dealer') {
+      // player done
+      game.nextPlayer();
+    }
+  }
+  this.savePlayerState();
+}
 	
-	self.init = function () {
-		// For now there is only one
-		// but there could be multiples 
-		// splitting is implemented 
-		self.hands = [new Hand()];
-		self.tokens = 1000;
+Player.prototype.drawPlayerImage = function(x,y, sx, sy) {
+	if (this.playerImage)
+    if (sx == undefined) {
+		  game.ctx.drawImage(this.playerImage, x, y, sx, sy);
+    } else game.ctx.drawImage(this.playerImage, x, y);
+}
+
+Player.prototype.savePlayerState = function() {
+	var p = {};
+	p.id = this.id;
+	p.currentBet = 1;
+	p.isPlayerTurn = this.isPlayerTurn;
+	p.playerImageURL = this.playerImageURL;
+	
+  var handsValue = [];
+	for (var i = 0; i<this.hands.length; i++) {
+		var hand = this.hands[i];
+		var handState = hand.getState();
+		handsValue.push(handState);
 	}
 	
-	self.setPlayerId = function(id) {
-		self.playerId = id;
-	}
-	
-	self.loadPlayerImage = function (imgSrc) {
-		
-		
+  p.hands = JSON.stringify(handsValue);
+	console.log(p);
+	gapi.hangout.data.setValue(p.id, JSON.stringify(p));
+}
+
+Player.prototype.loadPlayerImage = function (imgSrc) {		
 		var image = new Image();
-		image.onload = function() {
+		var self = this;
+    image.onload = function() {
 			var canvas = document.createElement("canvas");
 			var width = image.width;
 			var height = image.height;
@@ -43,43 +95,4 @@ function Player() {
 			self.playerImageURL = imgSrc;
 		}
 		image.src = imgSrc;
-	} 
-	
-	self.hit = function(card) {
-		// Hit current hand
-		self.hands[self.currentHand].addToHand(card);
-		// Save hand to state
-	  self.savePlayerState();	
-	}
-	
-	self.stand = function() {
-		if (self.hands.length > 1) {
-			self.currentHand++;
-		}
-    self.savePlayerState();
-	}
-	
-	self.drawPlayerImage = function(x,y) {
-		if (self.playerImage)
-			game.ctx.drawImage(self.playerImage, x, y);
-	}
-	
-	self.savePlayerState = function() {
-		var p = {};
-		p.id = self.id;
-		p.currentBet = 1;
-		p.isPlayerTurn = self.isPlayerTurn;
-		p.playerImageURL = self.playerImageURL;
-		var handsValue = [];
-		for (var i = 0; i<self.hands.length; i++) {
-			var hand = self.hands[i];
-			var handState = hand.getState();
-			handsValue.push(handState);
-		}
-		p.hands = JSON.stringify(handsValue);
-		console.log(p);
-		gapi.hangout.data.setValue(p.id, JSON.stringify(p));
-	}
-
-	self.init(); 
 }

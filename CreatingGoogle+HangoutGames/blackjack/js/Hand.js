@@ -5,6 +5,7 @@ var Hand = function() {
 Hand.prototype.init = function () {
   	this.cards = [ ];
     this.offset = 15;
+    this.startPosition = {'x':0, 'y':0};
 }
 
 Hand.prototype.addToHand = function (card) {
@@ -13,23 +14,29 @@ Hand.prototype.addToHand = function (card) {
 			var previousCard = this.cards[this.cards.length-1]
 			card.setX(previousCard.getX() + this.offset);
 			card.setY(previousCard.getY() + this.offset);	
-		}
+		} else if (this.cards.length == 0) {
+      card.setX(this.startPosition.x);
+			card.setY(this.startPosition.y);
+    }
 		this.cards.push(card);
 }
 
 // Set the position of the first card 
 // Recursively set the others
 Hand.prototype.setPosition = function (x,y) {
-	  var card = this.cards[0];
-	  card.setX(x);
-	  card.setY(y);
-	  for (var i = 1; i<this.cards.length; i++) {
-		  var c = this.cards[i]
-		  var previousCard = this.cards[i-1];
-		  c.setX(previousCard.getX() + this.offset);
-		  c.setY(previousCard.getY() + this.offset);
-	  }
-	  console.log('repositioned cards');
+    this.startPosition = {'x':x,'y':y};
+    if (this.cards.length > 1) {
+      var card = this.cards[0];
+      card.setX(this.startPosition.x);
+      card.setY(this.startPosition.y);
+      for (var i = 1; i<this.cards.length; i++) {
+        var c = this.cards[i]
+        var previousCard = this.cards[i-1];
+        c.setX(previousCard.getX() + this.offset);
+        c.setY(previousCard.getY() + this.offset);
+      }
+      console.log('repositioned cards');
+    }
 }
 
 Hand.prototype.addAll = function (array) {

@@ -125,6 +125,22 @@ var Evaluator = function() {
 				totals.push(newTotal);
 		}
 		return totals
-	}	
+	}
+
+  self.getMaxHandTotal = function(hand) {
+    var totals = self.getHandTotals(hand);
+    return _.max(totals);
+  }  
+
+  self.evaluate = function(hand) {
+    var result = {};
+    result.shouldHit = self.shouldHit(hand);
+    result.shouldStay = self.shouldStay(hand);
+    result.shouldDoubleDown = self.shouldDoubleDown(hand);
+    result.handTotals = self.getHandTotals(hand);
+    result.maxTotal = self.getMaxHandTotal(hand);
+    result.isBust = self.isBust(hand);
+    return result;
+  };
 }
 
