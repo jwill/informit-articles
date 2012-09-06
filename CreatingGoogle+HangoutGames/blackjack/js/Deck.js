@@ -150,8 +150,8 @@ function Deck(numDecks, ctx) {
 
     
     self.lookupCard = function(value) {
-    	for (var i = 0; i<window.deck.cards.length; i++) {
-    		var card = window.deck.cards[i];
+    	for (var i = 0; i<52; i++) {
+    		var card = self.cards[i];
     		if (value.suit == card.suit && value.ord == card.ord) {
     			return card.clone();
     		} 
