@@ -15,13 +15,22 @@ var BlackJackGame = function() {
  */ 
 
 BlackJackGame.prototype.createCanvas = function() {
-  this.gameWidth = window.innerWidth;
+  /* Width of sidebar + 5px gap */
+  this.gameWidth = window.innerWidth - 305;
   this.gameHeight = window.innerHeight;
   this.canvas = document.getElementById("gameboard");
   this.canvas.width = this.gameWidth;
   this.canvas.height = this.gameHeight;
   this.ctx = this.canvas.getContext("2d");
-  this.drawBackground();
+  this.drawBackground(this.ctx, this.gameWidth, this.gameHeight);
+};
+
+BlackJackGame.prototype.drawSideCanvas = function(width, height) {
+  this.canvasSideBar = document.getElementById('canvasSideBar');
+  this.canvasSideBar.width = width;
+  this.canvasSideBar.height = height;
+  this.sidebarCtx = this.canvasSideBar.getContext('2d');
+  this.drawBackground(this.sidebarCtx, width, height);
 };
 
 
@@ -41,15 +50,19 @@ BlackJackGame.prototype.init = function() {
 
 BlackJackGame.prototype.getContext = function () {
   return this.ctx;
-} ;
+};
 
-BlackJackGame.prototype.drawBackground = function() {
-  this.ctx.save();
-  this.ctx.fillStyle = 'green';
-  this.ctx.strokeStyle = 'black'
-  this.ctx.lineCap = 'round';
-  this.ctx.fillRect(0,0, this.gameWidth, this.gameHeight);
-  this.ctx.restore();
+BlackJackGame.prototype.drawVideoFeed = function() {
+
+};
+
+BlackJackGame.prototype.drawBackground = function(context, width, height) {
+  context.save();
+  context.fillStyle = 'green';
+  context.strokeStyle = 'black'
+  context.lineCap = 'round';
+  context.fillRect(0,0, width, height);
+  context.restore();
 };
 
 BlackJackGame.prototype.drawStaticAssets = function() {
@@ -161,12 +174,12 @@ BlackJackGame.prototype.setupKeys = function () {
 
   Mousetrap.bind('c', function(){
     game.dealer.hands[0] = new Hand();
-    game.drawBackground();
+    game.drawBackground(this.ctx, this.gameWidth, this.gameHeight);
   });
 };
   
 BlackJackGame.prototype.updateGameBoard = function() {
-  this.drawBackground();
+  this.drawBackground(this.ctx, this.gameWidth, this.gameHeight);
   // Draw all the players
   
   //window.player.drawPlayerImage();
@@ -268,6 +281,10 @@ BlackJackGame.prototype.dealInitialHand = function() {
   
   // Transition to PLAY state
   gapi.hangout.data.submitDelta({'gameState':'PLAY', 'playerTurn':game.players[0].id});
+}
+
+BlackJackGame.prototype.calculateHandPositions = function() {
+  
 }
 
 BlackJackGame.prototype.stateUpdated = function(evt) {

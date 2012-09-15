@@ -1,0 +1,23 @@
+ .sidebar {
+  width: 300px;
+  border: black;
+  border-width: 1px;
+  border-style: solid;
+  float: left;
+
+  background-color: #2D2D2D;
+}
+header {
+  height: 50px;
+  background-color: #2D2D2D;
+}
+header span {
+  color:gray;
+}
+
+#situpdown {
+  float:right;
+  margin-top: -40px;
+  margin-right: 5px;
+}
+
