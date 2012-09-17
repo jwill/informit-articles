@@ -45,13 +45,12 @@ Hand.prototype.addAll = function (array) {
     }
 }
 
-Hand.prototype.drawHand = function (size) {
-		console.log("here");
+Hand.prototype.drawHand = function (context, size) {
 		for (var i = 0; i < this.cards.length; i++) {
 			var card = this.cards[i];
 			if (i == 0)
-				card.drawFront(size);
-			else card.drawFront(size);
+				card.drawFront(context, size);
+			else card.drawFront(context,size);
 		}
 }
   

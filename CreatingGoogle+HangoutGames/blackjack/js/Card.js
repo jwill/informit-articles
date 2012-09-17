@@ -127,12 +127,12 @@ function Card(ordinal, val, suit) {
         return copy;
     }
 
-		self.drawFront = function (size) {
-			self.cardFront.draw(size);
+		self.drawFront = function (context, size) {
+			self.cardFront.draw(context, size);
 		}
 
-		self.drawBack = function (size) {
-			self.cardBack.draw(size);
+		self.drawBack = function (context, size) {
+			self.cardBack.draw(context, size);
 		}
     
     self.init();

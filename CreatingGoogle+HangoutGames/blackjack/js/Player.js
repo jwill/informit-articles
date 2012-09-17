@@ -41,16 +41,21 @@ Player.prototype.clearCards = function() {
 }
 	
 Player.prototype.stand = function() {
+  var updates = {};
+  updates[this.id] = this.toString();
+
   console.log("stand");
 	if (this.hands.length-1 != this.currentHand) {
 		this.currentHand++;
 	} else {
     if (this.id != 'dealer') {
       // player done
-      game.nextPlayer();
+      var nextPlayer = game.nextPlayer();
+      updates['playerTurn'] = nextPlayer;
+      if (nextPlayer == 'dealer') updates['gameState'] = 'DPLAY';
     }
   }
-  this.savePlayerState();
+  gapi.hangout.data.submitDelta(updates);
 }
 	
 Player.prototype.drawPlayerImage = function(x,y, sx, sy) {
@@ -58,6 +63,25 @@ Player.prototype.drawPlayerImage = function(x,y, sx, sy) {
     if (sx == undefined) {
 		  game.ctx.drawImage(this.playerImage, x, y, sx, sy);
     } else game.ctx.drawImage(this.playerImage, x, y);
+}
+
+Player.prototype.toString = function() {
+	var p = {};
+	p.id = this.id;
+	p.currentBet = 1;
+	p.isPlayerTurn = this.isPlayerTurn;
+	p.playerImageURL = this.playerImageURL;
+	
+  var handsValue = [];
+	for (var i = 0; i<this.hands.length; i++) {
+		var hand = this.hands[i];
+		var handState = hand.getState();
+		handsValue.push(handState);
+	}
+	
+  p.hands = JSON.stringify(handsValue);
+	
+	return JSON.stringify(p);
 }
 
 Player.prototype.savePlayerState = function() {

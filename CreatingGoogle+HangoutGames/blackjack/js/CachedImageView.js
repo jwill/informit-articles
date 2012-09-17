@@ -26,14 +26,14 @@ var CachedImageView = function (image, width, height) {
     self.width = width;
     self.height = height;
     
-    self.draw = function(size) {
+    self.draw = function(context, size) {
         if(self.loaded) { 
 						if (size == undefined) 
-            	game.getContext().drawImage(self.img,self.x,self.y);
-						else game.getContext().drawImage(self.img, self.x, self.y, self.width*size, self.height*size);
+            	context.drawImage(self.img,self.x,self.y);
+						else context.drawImage(self.img, self.x, self.y, self.width*size, self.height*size);
         } else {
-            game.getContext().fillStyle = "red";
-            game.getContext().fillRect(self.x,self.y,100,100);
+            context.fillStyle = "red";
+            context.fillRect(self.x,self.y,100,100);
         }
     };
     

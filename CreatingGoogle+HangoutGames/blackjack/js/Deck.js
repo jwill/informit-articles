@@ -73,7 +73,7 @@ function Deck(numDecks, ctx) {
     self.reshuffleDecks = function() {
       console.log('reshuffling decks...');
       var numDecks = JSON.parse(gapi.hangout.data.getValue('numDecks'));
-      var deckData = JSON.parse(deck.toString());
+      var deckData = JSON.parse(game.deck.toString());
       var newCards = [];
 
       _.times(numDecks, function() {

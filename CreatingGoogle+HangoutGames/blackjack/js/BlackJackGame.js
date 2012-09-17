@@ -29,13 +29,15 @@ BlackJackGame.prototype.drawSideCanvas = function(width, height) {
   this.canvasSideBar = document.getElementById('canvasSideBar');
   this.canvasSideBar.width = width;
   this.canvasSideBar.height = height;
+  this.sidebarWidth = width;
+  this.sidebarHeight = height;
   this.sidebarCtx = this.canvasSideBar.getContext('2d');
   this.drawBackground(this.sidebarCtx, width, height);
 };
 
 
 BlackJackGame.prototype.init = function() {
-    
+    this.playerId = gapi.hangout.getLocalParticipantId();
     this.dealer = new Player();
     this.dealer.isDealer = true;
     this.dealer.id = 'dealer';
@@ -44,12 +46,17 @@ BlackJackGame.prototype.init = function() {
     this.evaluator.setDealer(this.dealer.getCurrentHand());
     this.players = [];
     this.createCanvas();
+    this.drawSideCanvas(300,325);
     var self = this;
     $().ready(function() {self.createCanvas();});
 };
 
 BlackJackGame.prototype.getContext = function () {
   return this.ctx;
+};
+
+BlackJackGame.prototype.getSidebarContext = function() {
+  return this.sidebarCtx;
 };
 
 BlackJackGame.prototype.drawVideoFeed = function() {
@@ -79,8 +86,7 @@ BlackJackGame.prototype.checkTurn = function() {
   var playerTurn = gapi.hangout.data.getValue('playerTurn');
 
   // Get id of current user
-  var id = gapi.hangout.getLocalParticipantId();
-  return playerTurn === id;
+  return playerTurn === this.playerId;
 }
 
 BlackJackGame.prototype.nextPlayer = function() {
@@ -92,32 +98,38 @@ BlackJackGame.prototype.nextPlayer = function() {
     if (participant.id == playerTurn) {
       if (enabledParticipants[i+1] != undefined) {
         var nextPlayer = enabledParticipants[i+1];
-        gapi.hangout.data.setValue('playerTurn', nextPlayer.id);
-        return nextPlayer;
+        return nextPlayer.id;
       }
     }
   }
   // If there aren't any more players that need to play, go to the
   // dealer
-  gapi.hangout.data.setValue('gameState', 'DPLAY');
+  return 'dealer';
 };
 
 BlackJackGame.prototype.playDealerHand = function() {
+  var updates = {
+  };
+
   var hand = game.dealer.getCurrentHand();
   game.evaluator.setDealer(hand);
   var handStatus = game.evaluator.evaluate(hand);
   // If 17 or higher, stand, otherwise hit
-  var lt17 = _.any(handStatus.handTotals, function(total) {return total<17;})
-  if(lt17){
+  var lt17 = _.any(handStatus.handTotals, function(total) {return total<17;});
+  var is21 = _.any(handStatus.handTotals, function(total) {return total==21;});
+  if (is21) {
+    updates['gameState'] = 'EVAL';
+  } else if(lt17){
     game.dealer.hit(game.deck.dealCard());
-    game.dealer.getCurrentHand().drawHand();
-    handStatus = game.evaluator.evaluate(game.dealer.getCurrentHand());
-    lt17 = _.any(handStatus.handTotals, function(total) {return total<17;})
+    updates['dealer'] = game.dealer.toString();
+    game.dealer.getCurrentHand().drawHand(game.getContext());
     // Tweaking the string value is needed to make it fire a new event
-    gapi.hangout.data.setValue('gameState', 'DPLAY'+new Date().getTime() );   
+    updates['gameState'] = 'DPLAY'+new Date().getTime();
   } else {
-    gapi.hangout.data.setValue('gameState', 'EVAL');
+    updates['gameState'] = 'EVAL';
   }
+
+  gapi.hangout.data.submitDelta(updates);
 };
 
 BlackJackGame.prototype.evaluateHands = function(dealerHand) {
@@ -157,7 +169,7 @@ BlackJackGame.prototype.setupKeys = function () {
       player = _.find(game.players, function(p) { return p.id == playerTurn});
       if (!game.evaluator.isBust(player.getCurrentHand())) {
         player.hit(game.deck.dealCard());
-        player.hands[player.currentHand].drawHand();
+        player.hands[player.currentHand].drawHand(game.getSidebarContext());
       }
     }
   });
@@ -168,7 +180,7 @@ BlackJackGame.prototype.setupKeys = function () {
       var playerTurn = gapi.hangout.data.getValue('playerTurn');  
       player = _.find(game.players, function(p) { return p.id == playerTurn});
       player.stand();
-      player.hands[player.currentHand].drawHand();
+      player.hands[player.currentHand].drawHand(game.getSidebarContext());
     }
   });
 
@@ -177,39 +189,57 @@ BlackJackGame.prototype.setupKeys = function () {
     game.drawBackground(this.ctx, this.gameWidth, this.gameHeight);
   });
 };
+
+BlackJackGame.prototype.drawPlayerHeader = function(player) {
+  var playerSidebarImage = document.querySelector('img');
+  playerSidebarImage.src = player.playerImageURL;
+  playerSidebarImage.width = 48;
+
+  var playerName = document.querySelector('#name');
+  playerName.textContent = player.name;
+  
+  var playerScore = document.querySelector('#score');
+  playerScore.textContent = '$' + player.tokens;
+};
   
 BlackJackGame.prototype.updateGameBoard = function() {
-  this.drawBackground(this.ctx, this.gameWidth, this.gameHeight);
-  // Draw all the players
+  this.drawBackground(this.getContext(), this.gameWidth, this.gameHeight);
+  this.drawBackground(this.getSidebarContext(), this.sidebarWidth, this.sidebarHeight);
+  // Draw the dealer
+  this.dealer.getCurrentHand().drawHand(game.getContext());
   
-  //window.player.drawPlayerImage();
-  //window.player.hands[0].drawHand();
-  // TODO position player hands
-  _.each(this.players, function(player) {
-    _.each(player.hands, function(hand) {
-      hand.drawHand();
-    });
+  // Draw the player panel
+  // TODO Allow drawing other players and storing the current viewed player
+  var currentPlayer = _.find(game.players, function(p) {return p.id === game.playerId});
+  this.drawPlayerHeader(currentPlayer);
+
+  _.each(currentPlayer.hands, function(hand) {
+    hand.drawHand(game.getSidebarContext());
   });
 
-  this.dealer.getCurrentHand().drawHand();
+  
+  // Draw the static assets
+  
 };
 
 BlackJackGame.prototype.newRound = function() {
+  var updates = {};
+  updates['gameState'] = 'DEAL';
   this.players = this.loadPlayerData();
   _.each(this.players, function(player) {
     player.clearCards();
-    player.savePlayerState(); 
+    updates[player.id] = player.toString();
   });
 
   this.dealer.clearCards();
-  this.dealer.savePlayerState();
+  updates['dealer'] = this.dealer.toString();
   // set dealer hand and position
   // TODO DRY later
   this.dealer.hands[0].setPosition(140,0);
   this.evaluator.setDealer(this.dealer.getCurrentHand());
 
-  // Set first player 
-  gapi.hangout.data.setValue('gameState', 'DEAL');
+  game.updateGameBoard(); 
+  gapi.hangout.data.submitDelta(updates);
 }
 
 BlackJackGame.prototype.createTurnIndicator = function () {
@@ -230,6 +260,7 @@ BlackJackGame.prototype.loadPlayerData = function() {
     var participant = enabledPlayers[i];
       var player = new Player();
       player.id = participant.id;
+      player.name = participant.person.displayName;
       player.loadPlayerImage(participant.person.image.url);
       
       var state = gapi.hangout.data.getValue(player.id);
@@ -242,6 +273,7 @@ BlackJackGame.prototype.loadPlayerData = function() {
   if (gapi.hangout.data.getValue('dealer') != undefined) {
     game.dealer.hands = this.loadState('dealer');
   }
+
   return players;
 }
 
@@ -262,16 +294,22 @@ BlackJackGame.prototype.loadState = function(id) {
 };
 
 BlackJackGame.prototype.dealInitialHand = function() {
+  var updates = {
+    gameState:'PLAY',
+    playerTurn: game.players[0].id
+  };
   var cardsNeeded = 2 * (game.players.length + 1);
   var cards = game.deck.dealCards(cardsNeeded);
 
   _.times(2, function() {
     _.each(game.players, function(p) {
       p.hands[0].addToHand(cards.pop());
-      p.savePlayerState(); 
+      updates[p.id] = p.toString();
+      //p.savePlayerState(); 
     });
     game.dealer.hands[0].addToHand(cards.pop());
-    game.dealer.savePlayerState();
+    updates['dealer'] = game.dealer.toString();
+    //game.dealer.savePlayerState();
     game.updateGameBoard();
   });
 
@@ -280,24 +318,43 @@ BlackJackGame.prototype.dealInitialHand = function() {
 
   
   // Transition to PLAY state
-  gapi.hangout.data.submitDelta({'gameState':'PLAY', 'playerTurn':game.players[0].id});
+  gapi.hangout.data.submitDelta(updates);
 }
 
 BlackJackGame.prototype.calculateHandPositions = function() {
   
 }
 
+BlackJackGame.prototype.changedKey = function() {
+  var metadata = gapi.hangout.data.getStateMetadata();
+  var changedKey = '';
+  var timestamp = 0;
+
+  for (key in metadata) {
+    if (metadata[key].timestamp > timestamp){
+      timestamp = metadata[key].timestamp;
+      changedKey = key;
+    }
+  }
+  return changedKey;
+}
+
+BlackJackGame.prototype.playerStateChanged = function() {
+  var key = this.changedKey();
+  if (key.substring(0,7) == 'hangout') {
+    return true;
+  } else return false;
+}
+
 BlackJackGame.prototype.stateUpdated = function(evt) {
   var gameHost = game.getGameHost();
   var currentPlayer = gapi.hangout.getLocalParticipantId();
-  if (gameHost != currentPlayer) {
+  if (gameHost == currentPlayer) {
     // Only run on host
     // Manage game state and evaluators
-    var gameState = _.find(evt.addedKeys, function(item) {
-      return item.key == 'gameState';
-    });
+    var gameState = evt.state.gameState;
     if (gameState != undefined) {
-      if (gameState.value.substr(0,5) == "DPLAY") {
+      if (gameState.substr(0,5) == "DPLAY") {
         console.log('DPLAY');
         //try {
           game.playDealerHand();
@@ -305,17 +362,18 @@ BlackJackGame.prototype.stateUpdated = function(evt) {
         //} catch (ex) {
         //  console.log(ex);
         //}
-      } else if (gameState.value == 'EVAL') {
+      } else if (gameState == 'EVAL') {
          // Evaluate game hands and do payouts
         var hand = game.loadState('dealer')[0];
         var handStatus = game.evaluator.evaluate(hand);
         game.evaluateHands(handStatus); 
       }
     }
+  } else {
+    game.players = game.loadPlayerData();
+    //game.updateGameBoard();
+
   }
-  // Redraw hands
-  game.players = game.loadPlayerData();
-  game.updateGameBoard();
 }
 
 BlackJackGame.prototype.changeState = function(state) {
@@ -380,8 +438,11 @@ BlackJackGame.prototype.resetDeck = function(numDecks) {
   if (numDecks == undefined)
     numDecks = 2;
   groupDeck = new Deck(numDecks);
-  gapi.hangout.data.setValue('numDecks', ''+numDecks);
-  gapi.hangout.data.setValue('deck', groupDeck.toString());
+  var updates = {
+    numDecks:''+numDecks,
+    deck:groupDeck.toString()
+  }
+  gapi.hangout.data.submitDelta(updates);
 }
 
 
