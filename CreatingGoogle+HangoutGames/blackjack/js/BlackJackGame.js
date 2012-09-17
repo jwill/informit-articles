@@ -47,6 +47,8 @@ BlackJackGame.prototype.init = function() {
     this.players = [];
     this.createCanvas();
     this.drawSideCanvas(300,325);
+    this.setupButtons();
+    this.updateGameBoard();
     var self = this;
     $().ready(function() {self.createCanvas();});
 };
@@ -133,7 +135,7 @@ BlackJackGame.prototype.playDealerHand = function() {
 };
 
 BlackJackGame.prototype.evaluateHands = function(dealerHand) {
-  // TODO Handle dealer blackjack
+  var updates = {};
   this.players = this.loadPlayerData();
   _.each(this.players, function(player) {
     _.each(player.hands, function(hand) {
@@ -144,22 +146,48 @@ BlackJackGame.prototype.evaluateHands = function(dealerHand) {
       } else if (dealerHand.isBust) {
         // Win
         console.log('Dealer bust');        
+        player.adjustFunds(2 * player.currentBet);
       } else if (playerHand.maxTotal > dealerHand.maxTotal) {
         // Win
         console.log('Player win');        
+        player.adjustFunds(2 * player.currentBet);
       } else if (playerHand.maxTotal < dealerHand.maxTotal) {
         // Lose
-        console.log('Player lost');        
+        console.log('Player lost');
       } else {
         // Push
         console.log('Push');        
+        player.adjustFunds(player.currentBet);
       }
-      
-    });    
+    });
+    updates[player.id] = player.toString();
   });
-  // TODO Transition state
+  updates['gameState'] = 'END';
+  gapi.hangout.data.submitDelta(updates);
 };
 
+BlackJackGame.prototype.setupButtons = function() {
+  var btnStand = document.querySelector('#btnStand');
+  btnStand.onclick = function() {
+    if (game.checkTurn()) {
+      var playerTurn = gapi.hangout.data.getValue('playerTurn');  
+      player = _.find(game.players, function(p) { return p.id == playerTurn});
+      player.stand();
+    }
+  }
+
+  var btnHit = document.querySelector('#btnHit');
+  btnHit.onclick = function() {
+    if (game.checkTurn()) {
+      var playerTurn = gapi.hangout.data.getValue('playerTurn');  
+      player = _.find(game.players, function(p) { return p.id == playerTurn});
+      if (!game.evaluator.isBust(player.getCurrentHand())) {
+        player.hit(game.deck.dealCard());
+        player.hands[player.currentHand].drawHand(game.getSidebarContext());
+      }
+    }
+  }
+}
 
 BlackJackGame.prototype.setupKeys = function () {
   Mousetrap.bind('h', function() {
@@ -267,7 +295,7 @@ BlackJackGame.prototype.loadPlayerData = function() {
   for (var i = 0; i<enabledPlayers.length; i++) {
     var participant = enabledPlayers[i];
     //Load or create Player object
-    var player = this.findPlayerById(participant.id);
+    player = this.findPlayerById(participant.id);
     if (player == null) {
       player = new Player();
       player.id = participant.id;
@@ -277,6 +305,9 @@ BlackJackGame.prototype.loadPlayerData = function() {
     }
     var state = gapi.hangout.data.getValue(player.id);
     if (state) {
+      var playerData = JSON.parse(gapi.hangout.data.getValue(player.id));
+      player.tokens = playerData.tokens;
+      player.currentBet = playerData.currentBet;
       player.hands = this.loadState(player.id);        
     }
     players.push(player);
@@ -316,12 +347,15 @@ BlackJackGame.prototype.dealInitialHand = function() {
     _.each(game.players, function(p) {
       p.hands[0].addToHand(cards.pop());
       updates[p.id] = p.toString();
-      //p.savePlayerState(); 
     });
     game.dealer.hands[0].addToHand(cards.pop());
     updates['dealer'] = game.dealer.toString();
-    //game.dealer.savePlayerState();
     game.updateGameBoard();
+  });
+
+  _.each(game.players, function(p) {
+    p.tokens -= p.currentBet;
+    updates[p.id] = p.toString();
   });
 
   var d = game.dealer.getCurrentHand();
@@ -378,11 +412,14 @@ BlackJackGame.prototype.stateUpdated = function(evt) {
         var hand = game.loadState('dealer')[0];
         var handStatus = game.evaluator.evaluate(hand);
         game.evaluateHands(handStatus); 
+      } else {
+        game.players = game.loadPlayerData();
+        game.updateGameBoard();
       }
     }
   } else {
     game.players = game.loadPlayerData();
-    //game.updateGameBoard();
+    game.updateGameBoard();
 
   }
 }

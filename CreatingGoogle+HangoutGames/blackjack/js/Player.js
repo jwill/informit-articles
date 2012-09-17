@@ -4,6 +4,7 @@ var Player = function() {
 	this.playerImage = false;
 	
 	this.currentHand = 0;
+  this.currentBet = 1;
 	this.id = null;
 	this.isPlayerTurn = false;
 	this.isLocal = false;
@@ -12,6 +13,10 @@ var Player = function() {
   this.tokens = 1000;
   this.evaluator = new Evaluator();
 };
+
+Player.prototype.adjustFunds = function(amount) {
+  this.tokens += amount;
+}
 
 Player.prototype.setPlayerId = function(id) {
 	this.playerId = id;
@@ -68,7 +73,8 @@ Player.prototype.drawPlayerImage = function(x,y, sx, sy) {
 Player.prototype.toString = function() {
 	var p = {};
 	p.id = this.id;
-	p.currentBet = 1;
+	p.currentBet = this.currentBet;
+  p.tokens = this.tokens;
 	p.isPlayerTurn = this.isPlayerTurn;
 	p.playerImageURL = this.playerImageURL;
 	
@@ -87,7 +93,8 @@ Player.prototype.toString = function() {
 Player.prototype.savePlayerState = function() {
 	var p = {};
 	p.id = this.id;
-	p.currentBet = 1;
+	p.currentBet = this.currentBet;
+  p.tokens = this.tokens;
 	p.isPlayerTurn = this.isPlayerTurn;
 	p.playerImageURL = this.playerImageURL;
 	
