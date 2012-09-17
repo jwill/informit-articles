@@ -252,22 +252,33 @@ BlackJackGame.prototype.createTurnIndicator = function () {
     }});
 };
 
+BlackJackGame.prototype.findPlayerById = function(id) {
+  for (var i = 0; i<game.players.length; i++) {
+    var player = game.players[i];
+    if (player.id == id) return player;
+  }
+  return null;
+}
+
 BlackJackGame.prototype.loadPlayerData = function() {
-  var hangoutParticipantId = gapi.hangout.getLocalParticipantId();
   var enabledPlayers = gapi.hangout.getEnabledParticipants();
   var players = [];
+  var player;
   for (var i = 0; i<enabledPlayers.length; i++) {
     var participant = enabledPlayers[i];
-      var player = new Player();
+    //Load or create Player object
+    var player = this.findPlayerById(participant.id);
+    if (player == null) {
+      player = new Player();
       player.id = participant.id;
       player.name = participant.person.displayName;
+      console.log('loaded image');
       player.loadPlayerImage(participant.person.image.url);
-      
-      var state = gapi.hangout.data.getValue(player.id);
-      if (state) {
-        player.hands = this.loadState(player.id);        
-      }
-      console.log(player.hands);
+    }
+    var state = gapi.hangout.data.getValue(player.id);
+    if (state) {
+      player.hands = this.loadState(player.id);        
+    }
     players.push(player);
   }
   if (gapi.hangout.data.getValue('dealer') != undefined) {
