@@ -41,7 +41,6 @@ BlackJackGame.prototype.init = function() {
     this.dealer = new Player();
     this.dealer.isDealer = true;
     this.dealer.id = 'dealer';
-    this.dealer.hands[0].setPosition(140,0);
     this.evaluator = new Evaluator();
     this.evaluator.setDealer(this.dealer.getCurrentHand());
     this.players = [];
@@ -62,7 +61,9 @@ BlackJackGame.prototype.getSidebarContext = function() {
 };
 
 BlackJackGame.prototype.drawVideoFeed = function() {
-
+  var video = gapi.hangout.layout.getVideoCanvas();
+  video.setPosition(window.innerWidth - video.getWidth(),0);
+  video.setVisible(true);
 };
 
 BlackJackGame.prototype.drawBackground = function(context, width, height) {
@@ -170,9 +171,8 @@ BlackJackGame.prototype.setupButtons = function() {
   var self = this;
   var btnDeal = document.querySelector('#btnDeal');
   btnDeal.onclick = function() {
-    var currentPlayer = gapi.hangout.getLocalParticipantId();
     // TODO Check for proper game state
-    if (game.getGameHost() == currentPlayer) {
+    if (game.isGameHost()) {
       game.newRound();
       // TODO Remove this later
       game.dealInitialHand();
@@ -260,8 +260,11 @@ BlackJackGame.prototype.drawPlayerHeader = function(player) {
 BlackJackGame.prototype.updateGameBoard = function() {
   this.drawBackground(this.getContext(), this.gameWidth, this.gameHeight);
   this.drawBackground(this.getSidebarContext(), this.sidebarWidth, this.sidebarHeight);
+  this.drawVideoFeed();
   // Draw the dealer
-  this.dealer.getCurrentHand().drawHand(this.getContext());
+  if ((this.gameState == 'BET') || (this.gameState == 'DEAL') || (this.gameState == 'PLAY'))
+    this.dealer.getCurrentHand().drawDealerHand(this.getContext());
+  else this.dealer.getCurrentHand().drawHand(this.getContext());
   
   // Draw the player panel
   // TODO Allow drawing other players and storing the current viewed player
@@ -290,9 +293,6 @@ BlackJackGame.prototype.newRound = function() {
 
   this.dealer.clearCards();
   updates['dealer'] = this.dealer.toString();
-  // set dealer hand and position
-  // TODO DRY later
-  this.dealer.hands[0].setPosition(140,0);
   this.evaluator.setDealer(this.dealer.getCurrentHand());
 
   game.updateGameBoard(); 
@@ -416,19 +416,16 @@ BlackJackGame.prototype.changedKey = function() {
 BlackJackGame.prototype.stateUpdated = function(evt) {
   var gameHost = game.getGameHost();
   var currentPlayer = gapi.hangout.getLocalParticipantId();
-  if (gameHost == currentPlayer) {
+  if (game.isGameHost()) {
     // Only run on host
     // Manage game state and evaluators
     game.gameState = evt.state.gameState;
     if (game.gameState != undefined) {
       if (game.gameState.substr(0,5) == "DPLAY") {
+        game.gameState = 'DPLAY';
         console.log('DPLAY');
         //try {
-          game.playDealerHand();
-        //  console.log('after deal hand');
-        //} catch (ex) {
-        //  console.log(ex);
-        //}
+        game.playDealerHand();
       } else if (game.gameState == 'EVAL') {
          // Evaluate game hands and do payouts
         var hand = game.loadState('dealer')[0];
@@ -488,6 +485,12 @@ BlackJackGame.prototype.getGameHost = function() {
   } else return this.selectGameHost();
 }
 
+BlackJackGame.prototype.isGameHost = function() {
+  var host = this.getGameHost();
+  var currentPlayer = gapi.hangout.getLocalParticipantId();
+  return host == currentPlayer;
+}
+
 BlackJackGame.prototype.selectGameHost = function(num) {
   // Get list of participants
   // If no params are passed, make the first person the host
@@ -520,7 +523,6 @@ gapi.hangout.onApiReady.add(function(event) {
   console.log('gapi loaded');  
   if(event.isApiReady) {
     window.game = new BlackJackGame();
-    window.player = new Player();
     window.game.players = window.game.loadPlayerData();
     window.game.deck = new Deck(1, window.game.ctx);
 
