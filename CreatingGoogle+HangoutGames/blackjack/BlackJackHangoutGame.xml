@@ -6,21 +6,21 @@
   </ModulePrefs>
   <Content type="html">
     <![CDATA[
-        <link href='//ribbitwave.appspot.com/css/bootstrap.min.css' rel='stylesheet'>
-        <link href='//ribbitwave.appspot.com/css/app.css' rel='stylesheet'>
+        <link href='//jwill.showoff.io/css/bootstrap.min.css' rel='stylesheet'>
+        <link href='//jwill.showoff.io/css/app.css' rel='stylesheet'>
   		  <script src="//talkgadget.google.com/hangouts/_/api/hangout.js?v=1.2"></script>
-      	<script src="//ribbitwave.appspot.com/js/coffee-script.js" type="text/javascript"></script>
-        <script src="//ribbitwave.appspot.com/js/Card.js" type="text/javascript"></script>
-        <script src="//ribbitwave.appspot.com/js/Hand.js" type="text/javascript"></script>
-        <script src="//ribbitwave.appspot.com/js/Evaluator.js" type="text/javascript"></script>
-        <script src="//ribbitwave.appspot.com/js/CachedImageView.js" type="text/javascript"></script>
-        <script src="//ribbitwave.appspot.com/js/Deck.js" type="text/javascript"></script>
-        <script src="//ribbitwave.appspot.com/js/mousetrap.min.js" type="text/javascript"></script>
-        <script src="//ribbitwave.appspot.com/js/Player.js" type="text/javascript"></script>
-        <script src="//ribbitwave.appspot.com/js/underscore-min.js" type="text/javascript"></script>
-        <script src="//ribbitwave.appspot.com/js/jquery-1.7.2.min.js" type="text/javascript"></script>
-        <script src="//ribbitwave.appspot.com/js/BlackJackGame.js" type="text/javascript"></script>
-        <script src='//ribbitwave.appspot.com/js/bootstrap.min.js' type='text/javascript'></script>        
+      	<script src="//jwill.showoff.io/js/coffee-script.js" type="text/javascript"></script>
+        <script src="//jwill.showoff.io/js/Card.js" type="text/javascript"></script>
+        <script src="//jwill.showoff.io/js/Hand.js" type="text/javascript"></script>
+        <script src="//jwill.showoff.io/js/Evaluator.js" type="text/javascript"></script>
+        <script src="//jwill.showoff.io/js/CachedImageView.js" type="text/javascript"></script>
+        <script src="//jwill.showoff.io/js/Deck.js" type="text/javascript"></script>
+        <script src="//jwill.showoff.io/js/mousetrap.min.js" type="text/javascript"></script>
+        <script src="//jwill.showoff.io/js/Player.js" type="text/javascript"></script>
+        <script src="//jwill.showoff.io/js/underscore-min.js" type="text/javascript"></script>
+        <script src="//jwill.showoff.io/js/jquery-1.7.2.min.js" type="text/javascript"></script>
+        <script src="//jwill.showoff.io/js/BlackJackGame.js" type="text/javascript"></script>
+        <script src='//jwill.showoff.io/js/bootstrap.min.js' type='text/javascript'></script>        
 
         <div class='sidebar'>
           <header>
@@ -37,6 +37,7 @@
           </header>
           <canvas id='canvasSideBar' width='300px' height='325px'></canvas>
           <div id='playHand'>
+	    <button class='btn' type='button' id='btnDeal'>Deal</button>
             <button class='btn' type='button' id='btnBet'>Bet</button>
             <button class='btn' type='button' id='btnHit'>Hit</button>
             <button class='btn' type='button' id='btnDoubleDown'>Double Down</button>

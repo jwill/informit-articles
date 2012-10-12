@@ -40,6 +40,7 @@ BlackJackGame.prototype.init = function() {
     this.playerId = gapi.hangout.getLocalParticipantId();
     this.dealer = new Player();
     this.dealer.isDealer = true;
+    this.gameState = 'BET';
     this.dealer.id = 'dealer';
     this.evaluator = new Evaluator();
     this.evaluator.setDealer(this.dealer.getCurrentHand());
@@ -216,6 +217,48 @@ BlackJackGame.prototype.setupButtons = function() {
   }
 }
 
+BlackJackGame.prototype.adjustControls = function() {
+  switch(this.gameState) {
+    case 'BET':
+      document.querySelector('#btnDeal').style.display = 'none';
+      document.querySelector('#btnHit').style.display = 'none';
+      document.querySelector('#btnDoubleDown').style.display = 'none';
+      document.querySelector('#btnSplit').style.display = 'none';
+      document.querySelector('#btnStand').style.display = 'none';
+
+      break;
+    case 'DEAL':
+      if (this.isGameHost()) {
+        document.querySelector('#btnDeal').style.display = '';
+      }
+      document.querySelector('#btnHit').style.display = 'none';
+      document.querySelector('#btnDoubleDown').style.display = 'none';
+      document.querySelector('#btnSplit').style.display = 'none';
+      document.querySelector('#btnStand').style.display = 'none';
+      break;
+    case 'PLAY':
+      if (this.isGameHost()) {
+        document.querySelector('#btnDeal').style.display = 'none';
+      }
+      document.querySelector('#btnHit').style.display = '';
+      document.querySelector('#btnDoubleDown').style.display = '';
+      document.querySelector('#btnSplit').style.display = '';
+      document.querySelector('#btnStand').style.display = '';
+      break;
+    case 'DPLAY':
+      document.querySelector('#btnHit').style.display = 'none';
+      document.querySelector('#btnDoubleDown').style.display = 'none';
+      document.querySelector('#btnSplit').style.display = 'none';
+      document.querySelector('#btnStand').style.display = 'none';
+      break;
+    case 'END':
+      if (this.isGameHost()) {
+        document.querySelector('#btnDeal').style.display = '';
+      }
+      break;
+  }
+}
+
 BlackJackGame.prototype.setupKeys = function () {
   Mousetrap.bind('h', function() {
     var player;
@@ -260,7 +303,8 @@ BlackJackGame.prototype.drawPlayerHeader = function(player) {
 BlackJackGame.prototype.updateGameBoard = function() {
   this.drawBackground(this.getContext(), this.gameWidth, this.gameHeight);
   this.drawBackground(this.getSidebarContext(), this.sidebarWidth, this.sidebarHeight);
-  this.drawVideoFeed();
+  //this.drawVideoFeed();
+  this.adjustControls();
   // Draw the dealer
   if ((this.gameState == 'BET') || (this.gameState == 'DEAL') || (this.gameState == 'PLAY'))
     this.dealer.getCurrentHand().drawDealerHand(this.getContext());
@@ -278,6 +322,7 @@ BlackJackGame.prototype.updateGameBoard = function() {
     });
 
   }
+  this.adjustControls();
   // Draw the static assets
   
 };
@@ -449,8 +494,6 @@ BlackJackGame.prototype.changeState = function(state) {
 
 BlackJackGame.prototype.participantEnabledApp = function(evt) {
   // Participant enabled app
-  // create local deck
-  // create empty hand
   // local deck for lookup
   game.deck = new Deck(1, window.game.ctx);
   window.game.setupKeys();
