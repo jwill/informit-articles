@@ -1,0 +1,8 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = 'quickstart.QuickstartApp'
+
+task wrapper(type: Wrapper) {
+  gradleVersion = '1.0-milestone-3'
+}

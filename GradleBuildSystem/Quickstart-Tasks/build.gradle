@@ -1,0 +1,15 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = 'quickstart.QuickstartApp'
+
+task GPL(description:'Sets project to GPL 3.0 license') << {
+  licenseFile = new File('LICENSE.txt')
+  u = 'http://www.gnu.org/licenses/gpl-3.0.txt'
+
+  println 'Retrieving GNU license text'
+  def url = new URL(u)
+  println 'Saving to LICENSE.txt'
+
+  licenseFile.setText(url.getText())
+}
