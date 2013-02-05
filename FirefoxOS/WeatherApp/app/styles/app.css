@@ -1,0 +1,12 @@
+
+/* Tip: Use "@import" to add styles instead of adding <link>'s in your
+   HTML, and volo will inline it when building for production */
+
+/* Styles for the installation button */
+@import "holo-base-elements.css";
+@import "holo-base-widgets.css";
+@import "holo-dark-elements.css";
+@import "holo-dark-widgets.css";
+@import "font-awesome.css";
+/* Your styles here */
+
