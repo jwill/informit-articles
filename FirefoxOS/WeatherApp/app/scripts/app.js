@@ -32,7 +32,7 @@ App.prototype.saveLocation = function() {
 
 App.prototype.getWeather = function() {
   var key = "";
-  var city, state, observationLocation, location, root;
+  var city, state, location, root;
   // load location
   this.db.get("location", function(r) {
     if (r != undefined || r != null) {
@@ -43,6 +43,14 @@ App.prototype.getWeather = function() {
     } else {
       // first run and grab location
     }
+    forecast = "//api.wunderground.com/api/"+key+"/forecast/q/"+location+"?callback=?";
+    $.getJSON(forecast, function(result){
+      console.log(result);
+      var fc = result.forecast.txt_forecast.forecastday[0];
+      // fcttext
+      console.log(fc.fcttext);
+      $('.desc').get(0).innerText = fc.fcttext;
+    });
     $.getJSON(root, function(result) {
       console.log(result);
       var current = result.current_observation;
