@@ -7,7 +7,7 @@
   </head>
   <body>
     <header class="actionBar">
-      <span>Weather</span>
+      <span>Weather Forecast</span>
       <div style="float:right;">
         <button id="btnSettings">
             <i class="icon-cog icon-3x"></i>        
@@ -15,10 +15,20 @@
       </div>
     </header>
     <section>
-      <span>Forecast for Mountain View, CA, US</span><br/>
-      <span style="font-size:2 em;">Clear</span><br/>
-      <span>48 F</span>
+      <div class="titleLine">
+        <span class="location">Mountain View, CA, US</span>
+      </div>
+      <div>
+        <img class="conditionsImage" src="images/Flat DarkGrey/30.png">
+        <div>
+          <span class="conditionsText">Clear</span><br/>
+          <span class="conditionsTemp">48 F</span>
+        </div>
+      </div>
 
+      <footer class='actionBar'>
+        <img class="logo" src="images/wundergroundLogo_4c_horz.png"><br/>
+      </footer>
     </section>
   </body>
 </html>

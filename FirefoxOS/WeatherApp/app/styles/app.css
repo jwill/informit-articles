@@ -10,3 +10,23 @@
 @import "font-awesome.css";
 /* Your styles here */
 
+.titleLine {
+  font-size: 2.0em; 
+}
+
+.conditionsImage {
+  float: left;  
+}
+
+.conditionsText {
+  font-size: 1.5em;
+}
+
+.conditionsTemp {
+  font-size: 1.5em;
+}
+
+.logo {
+  height: 50px;
+}
+
