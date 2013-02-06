@@ -14,5 +14,13 @@
   },
   "installs_allowed_from": ["*"],
   "appcache_path": "/cache.manifest",
-  "default_locale": "en"
+  "default_locale": "en",
+  "permissions": {
+    "geolocation":{
+      "description": "Required for detecting user location"
+    },
+    "storage": {
+      "description": "Allow user to save location"
+    }
+  }
 }
