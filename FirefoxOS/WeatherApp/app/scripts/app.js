@@ -2,6 +2,7 @@ var App = function() {
   this.db = Lawnchair({name:'weather'}, function(store) {
     console.log("loaded db");
   });  
+  this.loadWeather();
 };
 
 App.prototype.saveLocation = function() {
@@ -30,7 +31,28 @@ App.prototype.saveLocation = function() {
   });
 }
 
+App.prototype.loadWeather = function() {
+  this.db.all(function(store) {
+    console.log(store);
+    for (var i = 0; i<store.length; i++) {
+      var r = store[i];
+      if (r.key == "location") {
+        // get locations
+      }
+      if (r.hasOwnProperty('conditions')) {
+        $('.conditionsText').get(0).innerText = r.conditions;
+        $('.conditionsTemp').get(0).innerText = r.temp +" F";
+      }
+      if (r.key.substring(0,4) == "desc") {
+        var j = r.key.substring(4,5);
+        $('.desc'+j).get(0).innerHTML = "<span><strong>"+r.title+"</strong></span><br/>"+r.fcttext+"<br/><br/>";
+      }
+    }
+  });
+}
+
 App.prototype.getWeather = function() {
+  var self = this;
   var key = "";
   var city, state, location, root;
   // load location
@@ -45,11 +67,13 @@ App.prototype.getWeather = function() {
     }
     forecast = "//api.wunderground.com/api/"+key+"/forecast/q/"+location+"?callback=?";
     $.getJSON(forecast, function(result){
-      console.log(result);
-      var fc = result.forecast.txt_forecast.forecastday[0];
-      // fcttext
-      console.log(fc.fcttext);
-      $('.desc').get(0).innerText = fc.fcttext;
+      
+      var forecasts = result.forecast.txt_forecast.forecastday;
+      for (var i = 0; i<4; i++) {
+        var fc = forecasts[i];
+        $('.desc'+i).get(0).innerHTML = "<span><strong>"+fc.title+"</strong></span><br/>"+fc.fcttext+"<br/><br/>";
+        self.db.save({key:'desc'+i, title:fc.title, fcttext:fc.fcttext});
+      }
     });
     $.getJSON(root, function(result) {
       console.log(result);
@@ -62,6 +86,8 @@ App.prototype.getWeather = function() {
       $('.conditionsText').get(0).innerText = conditions;
       $('.conditionsTemp').get(0).innerText = temp +" F";
       // save current values in db
+      self.db.save({key:'conditions', conditions:conditions, temp:temp, timestamp:new Date()});
+      
     });
   })
   
@@ -73,7 +99,6 @@ App.prototype.getWeather = function() {
 yepnope({
   load: [
     "scripts/holo-touch.js", "scripts/vendor/zepto.min.js", "scripts/vendor/lawnchair/lawnchair-0.6.1.min.js",
-    "scripts/vendor/lawnchair/lawnchair-adapter-indexed-db-0.6.1.js",
     "scripts/vendor/picoModal.js"
   ],
   complete: function() {
