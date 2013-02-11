@@ -10,8 +10,17 @@
 @import "font-awesome.css";
 /* Your styles here */
 
+.actionBar {
+  height: 8%;
+}
+
+.appLabel {
+  font-size: 4.0em;
+}
+
 .titleLine {
   font-size: 2.0em; 
+  padding-top:70px;
 }
 
 .conditionsImage {
@@ -27,7 +36,8 @@
 }
 
 .logo {
-  height: 50px;
+  height: 100px;
+  width: 100%;
 }
 
 #footer {

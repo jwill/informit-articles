@@ -1,10 +1,9 @@
 var App = function() {
   var self = this;
-  //this.db = Lawnchair({name:'weather'}, function(store) {
-  //  console.log("loaded db");
-  //});  
-  window.localStorage['city'] = 'Mountain View';
-  window.localStorage['state'] = 'CA';
+  if (window.localStorage['city'] == undefined) {
+    window.localStorage['city'] = 'Mountain View';
+    window.localStorage['state'] = 'CA';
+  }
   this.loadWeather();
   this.getWeather();
   
