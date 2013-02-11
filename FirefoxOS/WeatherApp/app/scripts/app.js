@@ -1,9 +1,12 @@
 var App = function() {
   var self = this;
-  this.db = Lawnchair({name:'weather'}, function(store) {
-    console.log("loaded db");
-  });  
+  //this.db = Lawnchair({name:'weather'}, function(store) {
+  //  console.log("loaded db");
+  //});  
+  window.localStorage['city'] = 'Mountain View';
+  window.localStorage['state'] = 'CA';
   this.loadWeather();
+  this.getWeather();
   
   $('#btnSettings').click( function(evt){
     self.saveLocation();
@@ -33,12 +36,12 @@ App.prototype.saveLocation = function() {
     country = $('#country').get(0).value;
 
     var loc = {city:cityName, state:country};
-    console.log(loc);
-    self.db.save({"key":"location", value: loc}, function(evt) {
-      $('.location').get(0).innerHTML= cityName + ', ' + country;
-      self.getWeather();
-      self.modal.close();
-    });
+    window.localStorage['city'] = cityName;
+    window.localStorage['state'] = country;
+
+    $('.location').get(0).innerHTML= cityName + ', ' + country;
+    self.getWeather();
+    self.modal.close();
   });
   
   $('#cancelBtn').click(function(evt){
@@ -47,63 +50,62 @@ App.prototype.saveLocation = function() {
 }
 
 App.prototype.loadWeather = function() {
-  this.db.all(function(store) {
-    for (var i = 0; i<store.length; i++) {
-      var r = store[i];
-      if (r.key == 'location') {
-        $('.location').get(0).innerHTML= r.value.city + ', ' + r.value.state;
-      }
-      if (r.key == 'conditions') {
-        $('.conditionsText').get(0).innerHTML = r.conditions;
-        $('.conditionsTemp').get(0).innerHTML = r.temp +" F";
-      }
-      if (r.key != undefined && r.key.substring(0,4) == "desc") {
-        var j = r.key.substring(4,5);
-        $('.desc'+j).get(0).innerHTML = "<span><strong>"+r.title+"</strong></span><br/>"+r.fcttext+"<br/><br/>";
-      }
+  if (window.localStorage['city']) {
+    var city = window.localStorage['city'];
+    var state = window.localStorage['state'];
+    $('.location').get(0).innerHTML= city + ', ' + state;
+  }
+  if (window.localStorage['conditions']) {
+    var obj = JSON.parse(window.localStorage['conditions']);
+    $('.conditionsText').get(0).innerHTML = obj.conditions;
+    $('.conditionsTemp').get(0).innerHTML = obj.temp +" F";
+  }
+  if (window.localStorage['desc0']) {
+    for (var i = 0; i< 4; i++) {
+      var obj = JSON.parse(window.localStorage['desc'+i]);
+      $('.desc'+i).get(0).innerHTML = "<span><strong>"+obj.title+"</strong></span><br/>"+obj.fcttext+"<br/><br/>";
     }
-  });
+  }
 }
 
 App.prototype.getWeather = function() {
   var self = this;
-  var key = "";
+  var key = "b76d304ba5abe8af";
   var city, state, location, root;
   // load location
-  this.db.get("location", function(r) {
-    if (r != undefined || r != null) {
-      city = r.value.city;
-      state = r.value.state;
-      location = state + "/" + city + ".json";
-      root = "//api.wunderground.com/api/"+key+"/conditions/q/"+location+"?callback=?";
-    } else {
-      // first run and grab location
-      self.saveLocation();
+  console.log("getWeather");
+  if (window.localStorage['city']) {
+    var city = window.localStorage['city'];
+    var state = window.localStorage['state'];
+    location = state + "/" + city + ".json";
+    root = "//api.wunderground.com/api/"+key+"/conditions/q/"+location+"?callback=?";
+  } else {
+    self.saveLocation();
+  }
+  forecast = "//api.wunderground.com/api/"+key+"/forecast/q/"+location+"?callback=?";
+  $.getJSON(forecast, function(result){
+    
+    var forecasts = result.forecast.txt_forecast.forecastday;
+    for (var i = 0; i<4; i++) {
+      var fc = forecasts[i];
+      $('.desc'+i).get(0).innerHTML = "<span><strong>"+fc.title+"</strong></span><br/>"+fc.fcttext+"<br/><br/>";
+      var obj = {title:fc.title, fcttext:fc.fcttext};
+      window.localStorage['desc'+i] = JSON.stringify(obj);
     }
-    forecast = "//api.wunderground.com/api/"+key+"/forecast/q/"+location+"?callback=?";
-    $.getJSON(forecast, function(result){
-      
-      var forecasts = result.forecast.txt_forecast.forecastday;
-      for (var i = 0; i<4; i++) {
-        var fc = forecasts[i];
-        $('.desc'+i).get(0).innerHTML = "<span><strong>"+fc.title+"</strong></span><br/>"+fc.fcttext+"<br/><br/>";
-        self.db.save({key:'desc'+i, title:fc.title, fcttext:fc.fcttext});
-      }
-    });
-    $.getJSON(root, function(result) {
-      var current = result.current_observation;
-      var temp = current.temp_f;
-      var conditions = current.weather;
-      var observationLocation = current.observation_location.full;
+  });
+  $.getJSON(root, function(result) {
+    var current = result.current_observation;
+    var temp = current.temp_f;
+    var conditions = current.weather;
+    var observationLocation = current.observation_location.full;
 
-      $('.location').get(0).innerText = observationLocation;
-      $('.conditionsText').get(0).innerHTML = conditions;
-      $('.conditionsTemp').get(0).innerHTML = temp +" F";
-      // save current values in db
-      self.db.save({key:'conditions', conditions:conditions, temp:temp, timestamp:new Date()});
-      
-    });
-  })
+    $('.location').get(0).innerText = observationLocation;
+    $('.conditionsText').get(0).innerHTML = conditions;
+    $('.conditionsTemp').get(0).innerHTML = temp +" F";
+    // save current values in db
+    var obj = {conditions:conditions, temp:temp, timestamp: new Date()};
+    window.localStorage['conditions'] = JSON.stringify(obj);
+  });
   
   
 }
@@ -111,7 +113,7 @@ App.prototype.getWeather = function() {
 // Load the assets and start app
 yepnope({
   load: [
-    "scripts/holo-touch.js", "scripts/vendor/zepto.min.js", "scripts/vendor/lawnchair/lawnchair-0.6.1.min.js",
+    "scripts/vendor/zepto.min.js",
     "scripts/vendor/picoModal.js"
   ],
   complete: function() {

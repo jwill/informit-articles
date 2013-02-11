@@ -1,6 +1,6 @@
 {
   "version": "0.1",
-  "name": "WeatherApp",
+  "name": "Weather App",
   "description": "A Weather App",
   "launch_path": "/app.html",
   "icons": {
