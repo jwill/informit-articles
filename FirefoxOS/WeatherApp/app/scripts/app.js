@@ -69,7 +69,7 @@ App.prototype.loadWeather = function() {
 
 App.prototype.getWeather = function() {
   var self = this;
-  var key = "b76d304ba5abe8af";
+  var key = "<YOUR-API-KEY>";
   var city, state, location, root;
   // load location
   console.log("getWeather");
