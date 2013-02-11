@@ -1,8 +1,13 @@
 var App = function() {
+  var self = this;
   this.db = Lawnchair({name:'weather'}, function(store) {
     console.log("loaded db");
   });  
   this.loadWeather();
+  
+  $('#btnSettings').click( function(evt){
+    self.saveLocation();
+  });
 };
 
 App.prototype.saveLocation = function() {
@@ -24,6 +29,16 @@ App.prototype.saveLocation = function() {
   // Setup handlers
   $('#okBtn').click(function(evt){
     // save location to indexeddb
+    cityName = $('#city').get(0).value;
+    country = $('#country').get(0).value;
+
+    var loc = {city:cityName, state:country};
+    console.log(loc);
+    self.db.save({"key":"location", value: loc}, function(evt) {
+      $('.location').get(0).innerHTML= cityName + ', ' + country;
+      self.getWeather();
+      self.modal.close();
+    });
   });
   
   $('#cancelBtn').click(function(evt){
@@ -33,17 +48,16 @@ App.prototype.saveLocation = function() {
 
 App.prototype.loadWeather = function() {
   this.db.all(function(store) {
-    console.log(store);
     for (var i = 0; i<store.length; i++) {
       var r = store[i];
-      if (r.key == "location") {
-        // get locations
+      if (r.key == 'location') {
+        $('.location').get(0).innerHTML= r.value.city + ', ' + r.value.state;
       }
-      if (r.hasOwnProperty('conditions')) {
-        $('.conditionsText').get(0).innerText = r.conditions;
-        $('.conditionsTemp').get(0).innerText = r.temp +" F";
+      if (r.key == 'conditions') {
+        $('.conditionsText').get(0).innerHTML = r.conditions;
+        $('.conditionsTemp').get(0).innerHTML = r.temp +" F";
       }
-      if (r.key.substring(0,4) == "desc") {
+      if (r.key != undefined && r.key.substring(0,4) == "desc") {
         var j = r.key.substring(4,5);
         $('.desc'+j).get(0).innerHTML = "<span><strong>"+r.title+"</strong></span><br/>"+r.fcttext+"<br/><br/>";
       }
@@ -64,6 +78,7 @@ App.prototype.getWeather = function() {
       root = "//api.wunderground.com/api/"+key+"/conditions/q/"+location+"?callback=?";
     } else {
       // first run and grab location
+      self.saveLocation();
     }
     forecast = "//api.wunderground.com/api/"+key+"/forecast/q/"+location+"?callback=?";
     $.getJSON(forecast, function(result){
@@ -76,15 +91,14 @@ App.prototype.getWeather = function() {
       }
     });
     $.getJSON(root, function(result) {
-      console.log(result);
       var current = result.current_observation;
       var temp = current.temp_f;
       var conditions = current.weather;
       var observationLocation = current.observation_location.full;
 
       $('.location').get(0).innerText = observationLocation;
-      $('.conditionsText').get(0).innerText = conditions;
-      $('.conditionsTemp').get(0).innerText = temp +" F";
+      $('.conditionsText').get(0).innerHTML = conditions;
+      $('.conditionsTemp').get(0).innerHTML = temp +" F";
       // save current values in db
       self.db.save({key:'conditions', conditions:conditions, temp:temp, timestamp:new Date()});
       
@@ -93,7 +107,6 @@ App.prototype.getWeather = function() {
   
   
 }
-
 
 // Load the assets and start app
 yepnope({
