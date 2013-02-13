@@ -17,6 +17,13 @@ Port 8008 is a requirement of the Firefox OS Simulator. If you are
 serving the application to an actual device, it can be served from any
 port you choose.
 
+## Changing weather location
+
+Click the gear in the upper right corner and enter the city and 2-letter
+state abbreviation if
+the location is in the United States. Otherwise enter the full country
+name in the second text field. 
+
 ## Installing the app
 
 Navigate to localhost:8008/ on your Android device or in the simulator.
