@@ -9,7 +9,7 @@ http://www.informit.com/articles/article.aspx?p=2007355
 _Creating Games with Google+ Hangouts_
 http://www.informit.com/articles/article.aspx?p=1963536
 
-_"The Best Programming Advice I Ever Got" with James Williams_
+_"The Best Programming Advice I Ever Got" with James Williams_ (No code)
 http://www.informit.com/articles/article.aspx?p=1949992
 
 _Creating Google Chrome Extensions and Packaged Apps_
