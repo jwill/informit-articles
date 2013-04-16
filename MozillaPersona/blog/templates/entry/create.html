@@ -1,0 +1,37 @@
+<!DOCTYPE html >
+<html>
+	<head>
+		<title>Ratpack Blog</title>
+				
+		<!-- Skin CSS file -->
+		<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.9.0/build/assets/skins/sam/skin.css"/>
+		<!-- Utility Dependencies -->
+		<script src="http://yui.yahooapis.com/2.9.0/build/yahoo-dom-event/yahoo-dom-event.js"></script> 
+		<script src="http://yui.yahooapis.com/2.9.0/build/element/element-min.js"></script> 
+		<!-- Needed for Menus, Buttons and Overlays used in the Toolbar -->
+		<script src="http://yui.yahooapis.com/2.9.0/build/container/container_core-min.js"></script>
+		<script src="http://yui.yahooapis.com/2.9.0/build/menu/menu-min.js"></script>
+		<script src="http://yui.yahooapis.com/2.9.0/build/button/button-min.js"></script>
+		<!-- Source file for Rich Text Editor-->
+		<script src="http://yui.yahooapis.com/2.9.0/build/editor/editor-min.js"></script>
+		<script src="/js/coffee-script.js" ></script>
+
+		<script type="text/coffeescript" src="/coffee/create.coffee"></script>
+		<script src="/js/jquery.js"></script>	
+		</head>
+	<body class="yui-skin-sam">
+	<nav>
+		Create Post
+	</nav>
+	<br/><br/>
+	<label for="title">Title:</label>
+	<input type="text" id="title" cols="100" />
+	<br/>
+	<textarea name="msgpost" id="msgpost" cols="50" rows="10">
+    <strong>Your</strong> HTML <em>code</em> goes here.<br>
+    This text will be pre-loaded in the editor when it is rendered.
+   </textarea>
+   <button onclick="createPost()" value="create">Create Post</button>
+	</body>
+</html>
+

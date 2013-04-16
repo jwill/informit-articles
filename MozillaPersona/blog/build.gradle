@@ -4,38 +4,41 @@ apply plugin: 'application'
 repositories {
 	flatDir name:'lib', dirs:'lib'
 	mavenCentral()
-	
+
 }
 
 dependencies {
 	groovy group:'org.codehaus.groovy', name:'groovy', version:'1.8.0'
+	groovy name:'deckchair'
+	groovy name:'derby'
 	groovy group:'com.bleedingwolf.ratpack', name: 'Ratpack', version:'0.2-SNAPSHOT'
-	compile group: 'javax.servlet', name: 'servlet-api', version: '2.5'
+	groovy 'org.apache.httpcomponents:httpclient:4.2.3'
+  compile group: 'javax.servlet', name: 'servlet-api', version: '2.5'
   compile group: 'org.json', name: 'json', version: '20090211'
   compile(group: 'org.mortbay.jetty', name: 'jetty', version: '6.1.26') { exclude module: 'servlet-api' }
   compile(group: 'org.mortbay.jetty', name: 'jetty-util', version: '6.1.26') { exclude module: 'servlet-api' }
-  groovy name:'markdownj', version:'0.4-SNAPSHOT'  
+
 }
 
 installApp {
 	into('build/install/'+applicationName){
 		from ('templates').into '/templates'
 	}
-	
+
 	into('build/install/'+applicationName){
 		from ('public').into '/public'
 	}
-	
+
 }
 
 distZip {
 	into(applicationName){
 		from ('templates').into applicationName+'/templates'
 	}
-	
+
 	into(applicationName){
 		from ('public').into applicationName+'/public'
 	}
 }
 
-mainClassName = "App"
+mainClassName = "BlogApp"
