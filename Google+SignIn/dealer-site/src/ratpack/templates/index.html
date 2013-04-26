@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Ratpack</title>
+    <!-- Load Bootstrap -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <!-- Loading Flat UI -->
+    <link href="css/flat-ui.css" rel="stylesheet">
+    <link rel="shortcut icon" href="images/favicon.ico">
+  </head>
+  <body>
+    <div class="container">
+    <div class="row">
+        <div class="navbar navbar-inverse">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a href="#" class="btn btn-large">Flash Car Sales</a>
+                    <span id="signinButton" class="offset8">
+                        <span class="g-signin"
+                              data-callback="signinCallback"
+                              data-clientid="CLIENT_ID"
+                              data-cookiepolicy="single_host_origin"
+                              data-requestvisibleactions="http://schemas.google.com/AddActivity"
+                              data-scope="https://www.googleapis.com/auth/plus.login">
+  </span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <img class="span5" src="images/car/red-mini.jpg"/>
+        <img class="span5" src="images/car/silver-mini.jpg"/>
+    </div>
+
+    <div class="row">
+        <span class="offset1">
+            <a href="#" class="btn btn-large">Reserve</a>
+            <a href="#" class="btn btn-large">Comment</a>
+        </span>
+
+        <span class="offset2">
+            <a href="#" class="btn btn-large">Reserve</a>
+            <a href="#" class="btn btn-large">Comment</a>
+        </span>
+    </div>
+
+
+    <!-- Place this asynchronous JavaScript just before your </body> tag -->
+    <script type="text/javascript">
+        (function () {
+            var po = document.createElement('script');
+            po.type = 'text/javascript';
+            po.async = true;
+            po.src = 'https://apis.google.com/js/client:plusone.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(po, s);
+        })();
+    </script>
+</div>
+    <div class="footer">Flat UI Free design - http://designmodo.com</div>
+  </body>
+</html>

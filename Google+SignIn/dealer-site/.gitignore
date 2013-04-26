@@ -1,0 +1,10 @@
+.classpath
+.settings/
+.project
+.gradle
+build/
+bin/
+*.iml
+*.ipr
+*.iws
+gradle.properties
