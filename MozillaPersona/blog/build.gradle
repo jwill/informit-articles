@@ -40,5 +40,8 @@ distZip {
 		from ('public').into applicationName+'/public'
 	}
 }
+task wrapper(type: Wrapper) {
+  gradleVersion = '1.4'
+}
 
 mainClassName = "BlogApp"
