@@ -1,0 +1,10 @@
+----------------------------------------------------------------
+Sat Apr 27 14:23:01 PDT 2013:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.8.1.2 - (1095077): instance a816c00e-013e-4d60-abbc-00000071a840 
+on database directory /home/james/Repos/informit-articles/MozillaPersona/blog-new/src/ratpack/deckchair  with class loader sun.misc.Launcher$AppClassLoader@4e68fb 
+Loaded from file:/home/james/Repos/informit-articles/MozillaPersona/blog-new/lib/derby.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.7.0_21-b02
+user.dir=/home/james/Repos/informit-articles/MozillaPersona/blog-new/src/ratpack
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''

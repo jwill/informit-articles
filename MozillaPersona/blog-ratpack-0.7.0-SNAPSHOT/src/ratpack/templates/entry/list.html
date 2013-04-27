@@ -1,0 +1,26 @@
+<!DOCTYPE html5 >
+<html>
+	<head>
+		<title>Ratpack Blog</title>
+		<%= header %>
+	</head>
+	<body>
+	<nav>
+		Create Post
+	</nav>
+	<%
+		posts.each { %>
+			
+<article>
+	<header>
+		<h3><span><%= it.title %></span></h3>
+		<span>Published <%= it.dateCreated %> by <%= it.author %></span><br/><br/>
+	</header>
+	<section><%= it.content %></section>
+	<section>Comments</section>
+</article>
+	<%	}
+	%>
+	</body>
+</html>
+
