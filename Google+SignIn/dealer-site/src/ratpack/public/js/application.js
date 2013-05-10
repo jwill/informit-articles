@@ -58,6 +58,30 @@ function signinCallback(result) {
     }
 }
 
+function makeComment() {
+  var commentText = "This is a comment."; //document.querySelector("#commentText").innerText;
+  var authorName = localStorage['name'];
+  var imageUrl = localStorage['imageUrl'];
+  
+  var url = 'http://0.0.0.0:5050/comment';
+  
+  var data = "";
+  data += 'authorName='+ authorName+'&';
+  data += 'imageUrl='+ imageUrl+'&';
+  data += 'commentText='+ commentText;
+
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', url, true);
+  xhr.onload = function(response) {
+    if (this.status == 200) {
+      // Create comment was successful
+      // Create activity on Google+
+      makeCommentActivity(this.reponseText, commentText);
+    }
+  };
+  xhr.send(data)
+}
+
 function revokeConnection() {
     var access_token = gapi.auth.getToken().access_token;
     var url = 'https://accounts.google.com/o/oauth2/revoke?token=' + access_token;
@@ -68,7 +92,7 @@ function revokeConnection() {
        if (this.status == 200) {
            // success
            console.log("User disconnected");
-       };
+       }
     }
     xhr.send();
     } catch (error) {
@@ -102,17 +126,18 @@ function loadProfileInfo() {
     request.execute(callback);
 }
 
-function makeComment() {
+function makeCommentActivity(id, commentText) {
+    console.log("in make comment activity");
     var body = {
         'type':'http://schemas.google.com/CommentActivity',
         'target':{
-            'url':'http://0.0.0.0:5050/comment1'
+            'url':'http://0.0.0.0:5050/index.html#'+id
         },
         'result':{
             'type': 'http://schema.org/Comment',
-            'url': 'http://0.0.0.0:5050/comment1',
-            'name': 'John Doe',
-            'text': 'Blah blah'
+            'url': 'http://0.0.0.0:5050/index.html#'+id,
+            'name': localStorage['authorName'],
+            'text': commentText
         }
     };
     var request = gapi.client.request({

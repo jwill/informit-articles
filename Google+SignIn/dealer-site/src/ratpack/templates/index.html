@@ -39,7 +39,7 @@
     <div class="row">
         <span class="offset4">
             <a href="#" class="btn btn-large">Reserve</a>
-            <a href="#" class="btn btn-large">Comment</a>
+            <a href="#" id="btnComment" class="btn btn-large">Comment</a>
         </span>
 
         <!--span class="offset2">
@@ -47,7 +47,11 @@
             <a href="#" class="btn btn-large">Comment</a>
         </span-->
     </div>
-
+    <% for (comment in model.comments) { %>
+    <a id=<%= comment.id %></a>
+    <div id=<%= comment.id %>-body><img src=<%= comment.imageUrl%>><%= comment.author %> wrote:<br/><br/><%= comment.text %>
+    </div>
+    <% } %>
 
     <!-- Place this asynchronous JavaScript just before your </body> tag -->
     <script type="text/javascript">
