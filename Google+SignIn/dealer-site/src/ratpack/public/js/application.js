@@ -64,6 +64,7 @@ function makeComment() {
   var imageUrl = localStorage['imageUrl'];
   
   var url = 'http://0.0.0.0:5050/comment';
+  //var url = 'http://3qdg.localtunnel.com/comment';
   
   var data = "";
   data += 'authorName='+ authorName+'&';
@@ -127,15 +128,17 @@ function loadProfileInfo() {
 }
 
 function makeCommentActivity(id, commentText) {
+    var tempRoot = 'http://0.0.0.0:5050/'
+    //var tempRoot = 'http://'+'3qdg' +'.localtunnel.com';
     console.log("in make comment activity");
     var body = {
         'type':'http://schemas.google.com/CommentActivity',
         'target':{
-            'url':'http://0.0.0.0:5050/index.html#'+id
+            'url':tempRoot+'index.html#'+id
         },
         'result':{
             'type': 'http://schema.org/Comment',
-            'url': 'http://0.0.0.0:5050/index.html#'+id,
+            'url': tempRoot+'index.html#'+id,
             'name': localStorage['authorName'],
             'text': commentText
         }

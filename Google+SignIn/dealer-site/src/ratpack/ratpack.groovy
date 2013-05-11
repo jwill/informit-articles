@@ -29,4 +29,8 @@ import org.jboss.netty.handler.codec.http.multipart.HttpPostRequestDecoder
     response.text list
   }
 
+  get('/nuke') {
+    derby.nuke()
+  }
+
 }

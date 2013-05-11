@@ -48,8 +48,10 @@
         </span-->
     </div>
     <% for (comment in model.comments) { %>
-    <a id=<%= comment.id %></a>
-    <div id=<%= comment.id %>-body><img src=<%= comment.imageUrl%>><%= comment.author %> wrote:<br/><br/><%= comment.text %>
+    <a id=<%= comment.id %>></a>
+    <div itemscope itemtype="http://schema.org/Comment">
+    <div id=<%= comment.id %>-body><img src=<%= comment.imageUrl%>><%= comment.author %> wrote:<br/><br/>
+      <span itemprop="text"><%= comment.text %></span>
     </div>
     <% } %>
 
